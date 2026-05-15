@@ -14,4 +14,4 @@ Data flow must be visually and mathematically explicitly defined in the main ass
 
 ### 4. Strict Hardware Deadlines
 If the C thread's math takes longer than, for example, 1 millisecond, the another thread applies stale (e.g. out-of-date motor commands to the robot), potentially causing hardware failure.
-The target is synced to physical time (`fast: false`), and the reactor explicitly utilizes a `deadline(1 msec)` block. If the computation exceeds the physical time boundary, the runtime actively catches the violation, allowing for safe emergency fallbacks.
+The target is synced to physical time (`fast: false`), and the reactor explicitly utilizes a `deadline(1 msec)` block. If the computation exceeds the physical time boundary, the runtime catches the violation, allowing for safe emergency fallbacks.
