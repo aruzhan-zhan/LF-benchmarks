@@ -1,8 +1,8 @@
 ## Architectural Coding Standards Enforced
 
 ### 1. Strict Memory Isolation (No Mutexes)
-The C implementation relies on a global struct, requiring pthreads, mutexes, shared variable (eg. `pthread_mutex_lock`) usage across multiple separate threads, introducing the risk of data corruption, race conditions, and thread blocking (jitter).
-The global must be eliminated. Reactors must maintain entirely isolated private memory. Data must be packaged into a discrete struct and passed safely across explicitly defined ports.
+Shared memory and condition variables (pthread_cond_wait) are strictly forbidden.
+State must be strictly private to the component that owns it. Data (like x_current or u_sequence) must be passed explicitly through time-stamped messages across isolated Ports. Lingua Franca’s runtime handles the synchronization automatically.
 
 **Before (C):**
 ```c
@@ -22,8 +22,8 @@ reaction(x_current) -> u_apply {=
 ```
 
 ### 2. Logical Time Over Physical Sleep
-The C threads use sleep functions (eg.`sleep_ms(1)`). This is non-deterministic and highly susceptible to operating system background noise, leading to missed control cycles.
-Physical `sleep()` commands must be replaced with logical timers (e.g., `timer t(0, 1 msec)`). The LF runtime schedules reactor execution precisely based on logical time, ensuring deterministic execution independently of the OS scheduler.
+We must never use sleep() or artificial delays to pace a loop.
+We must use LF’s native timer construct. To achieve the 1 kHz control loop from the C code, the Sensor and Actuator reactors must be driven by a timer t(0, 1 msec).
 
 **Before (C):**
 ```c
@@ -43,8 +43,8 @@ reaction(t) -> x {=
 ```
 
 ### 3. Explicit Data Flow via Time-Stamped Ports
-The C implementation uses condition variables (eg. `pthread_cond_wait`) to wake up sleeping threads.
-Data flow must be visually and mathematically explicitly defined in the main assembly line (eg. `plant.x -> optimizer.x_current`). The LF compiler analyzes these arrows to map out causality, automatically resolving the feedback loop between reactors within the exact same logical microsecond.
+The execution order must be defined visually by how components are wired together, matching the "Sensor -> Computation -> Actuator" pipeline.
+If the Optimizer needs the Sensor's data, the code must explicitly declare sensor.x_current -> optimizer.x_current. LF uses this to build a deterministic execution graph, eliminating race conditions.
 
 **Before (C):**
 ```c
@@ -76,6 +76,13 @@ for (int iter = 0; iter < OPT_ITER; iter++) {
 ```
 
 **After (Lingua Franca):**
+```
+target C {
+    timeout: 5 sec,
+    fast: false
+}
+```
+
 ```
 reaction(x_current) -> u_apply {=
     // ... heavy gradient descent math ...
