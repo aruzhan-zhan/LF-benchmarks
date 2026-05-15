@@ -1,4 +1,4 @@
-## 🏗️ Architectural Coding Standards Enforced
+## Architectural Coding Standards Enforced
 
 ### 1. Strict Memory Isolation (No Mutexes)
 The C implementation relies on a global struct, requiring pthreads, mutexes, shared variable (eg. `pthread_mutex_lock`) usage across multiple separate threads, introducing the risk of data corruption, race conditions, and thread blocking (jitter).
