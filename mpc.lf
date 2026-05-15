@@ -8,16 +8,16 @@ preamble {=
     #include <string.h>
 
     // MPC parameters
-    #define NX      2
-    #define NU      1
-    #define HORIZON 10
-    #define DT      0.001
-    #define OPT_ITER 50
-    #define OPT_LR   0.01
+    #define NX      2        
+    #define NU      1        
+    #define HORIZON 10      
+    #define DT      0.001    
+    #define OPT_ITER 50      
+    #define OPT_LR   0.01 
 
     // Cost weights
-    #define Q_POS   10.0
-    #define Q_VEL   1.0
+    #define Q_POS   10.0     
+    #define Q_VEL   1.0                         
     #define R_INPUT 0.1
 
     // Input saturation
@@ -25,169 +25,42 @@ preamble {=
     #define U_MIN  -5.0
 
     // Linear system matrices
-    static const double A[NX][NX] = {{1.0, DT}, {0.0, 1.0}};
-    static const double B[NX][NU] = {{0.5 * DT * DT}, {DT}};
+    static const double A[NX][NX] = {
+        {1.0, DT },
+        {0.0, 1.0}
+    };
+    static const double B[NX][NU] = {
+        {0.5 * DT * DT},
+        {DT           }
+    };
 
-    // Custom struct to pass state cleanly across LF ports
-    typedef struct { double data[NX]; } state_t;
+    // Created struct to pass state across LF ports
+    typedef struct {
+        double data[NX];
+    } state_t; 
 
-    // QP cost function (Identical to the C code)
-    static double compute_cost(const double x0[NX], const double xref[NX], const double u_seq[HORIZON][NU]) {
-        double cost = 0.0;
-        double x[NX];
-        memcpy(x, x0, NX * sizeof(double));
+    // Reference reactor (Reactor thread)
+    reactor Reference{
+        output x_ref: state_t
 
-        for (int k = 0; k < HORIZON; k++) {
-            double ex[NX];
-            for (int i = 0; i < NX; i++) ex[i] = x[i] - xref[i];
-            cost += Q_POS * ex[0]*ex[0] + Q_VEL * ex[1]*ex[1];
+        timer t1(1 sec)
+        timer t2(3 sec)
 
-            for (int j = 0; j < NU; j++) cost += R_INPUT * u_seq[k][j] * u_seq[k][j];
+        reaction(startup) -> x_ref {=
+            state_t ref = {{0.0, 0.0}};
+            lf_set(x_ref, ref);
+        =}
 
-            double xn[NX] = {0};
-            for (int i = 0; i < NX; i++) {
-                for (int j = 0; j < NX; j++) xn[i] += A[i][j]*x[j];
-                for (int j = 0; j < NU; j++) xn[i] += B[i][j]*u_seq[k][j];
-            }
-            memcpy(x, xn, sizeof(x));
-        }
-        
-        double ex[NX];
-        for (int i = 0; i < NX; i++) ex[i] = x[i] - xref[i];
-        cost += 10.0 * Q_POS * ex[0]*ex[0] + 10.0 * Q_VEL * ex[1]*ex[1];
+        reaction(t1) -> x_ref {=
+            state_t ref = {{1.0, 0.0}};
+            lf_set(x_ref, ref);
+            printf("[ref    ] reference -> 1.0\n");
+        =}
 
-        return cost;
+        reaction(t2) -> x_ref {=
+            state_t ref = {{0.5, 0.0}};
+            lf_set(x_ref, ref);
+            printf("[ref    ] reference -> 0.5\n");
+        =}
     }
 =}
-
-// THREAD 5: REFERENCE (Converted to Reactor)
-reactor Reference {
-    output x_ref: state_t
-    
-    timer t1(1 sec)
-    timer t2(3 sec)
-
-    reaction(startup) -> x_ref {=
-        state_t ref = {{0.0, 0.0}};
-        lf_set(x_ref, ref);
-    =}
-
-    reaction(t1) -> x_ref {=
-        state_t ref = {{1.0, 0.0}};
-        lf_set(x_ref, ref);
-        printf("[ref    ] reference -> 1.0\n");
-    =}
-
-    reaction(t2) -> x_ref {=
-        state_t ref = {{0.5, 0.0}};
-        lf_set(x_ref, ref);
-        printf("[ref    ] reference -> 0.5\n");
-    =}
-}
-
-// THREAD 1 and 4: SENSOR and ACTUATOR (Combined into Plant)
-reactor Plant {
-    input u: double
-    output x: state_t
-
-    state plant_x: double[] = {0.0, 0.0}
-    state tick: long = 0
-    timer t(0, 1 msec)
-
-    // Sensor Logic: Fires exactly every 1ms
-    reaction(t) -> x {=
-        double noise = 0.0001 * sin((double)self->tick * 0.37);
-        state_t current_x;
-        current_x.data[0] = self->plant_x[0] + noise;
-        current_x.data[1] = self->plant_x[1] + noise * 0.5;
-        
-        lf_set(x, current_x);
-        self->tick++;
-    =}
-
-    // Actuator Logic: Fires instantly when the Optimizer delivers 'u'
-    reaction(u) {=
-        double u_val = u->value;
-        double x_new[NX];
-        
-        x_new[0] = A[0][0]*self->plant_x[0] + A[0][1]*self->plant_x[1] + B[0][0]*u_val;
-        x_new[1] = A[1][0]*self->plant_x[0] + A[1][1]*self->plant_x[1] + B[1][0]*u_val;
-        
-        self->plant_x[0] = x_new[0];
-        self->plant_x[1] = x_new[1];
-
-        if (self->tick % 500 == 0) {
-            printf("[actuate] tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
-                   self->tick, self->plant_x[0], self->plant_x[1], u_val);
-        }
-    =}
-}
-
-// THREAD 2 and 3: PREDICTOR and OPTIMIZER (Combined into Controller)
-reactor Optimizer {
-    input x_current: state_t
-    input x_ref_in: state_t
-    output u_apply: double
-
-    state x_ref: double[] = {0.0, 0.0}
-    state u_seq: double[10][1] = {0} // HORIZON=10, NU=1
-
-    // Store the latest reference setpoint when it arrives
-    reaction(x_ref_in) {=
-        self->x_ref[0] = x_ref_in->value.data[0];
-        self->x_ref[1] = x_ref_in->value.data[1];
-    =}
-
-    // Run Gradient Descent when fresh sensor data arrives
-    reaction(x_current) -> u_apply {=
-        double x0[NX];
-        x0[0] = x_current->value.data[0];
-        x0[1] = x_current->value.data[1];
-
-        double eps = 1e-5;
-        for (int iter = 0; iter < OPT_ITER; iter++) {
-            for (int k = 0; k < HORIZON; k++) {
-                for (int j = 0; j < NU; j++) {
-                    double u_p[HORIZON][NU], u_m[HORIZON][NU];
-                    memcpy(u_p, self->u_seq, sizeof(self->u_seq));
-                    memcpy(u_m, self->u_seq, sizeof(self->u_seq));
-                    u_p[k][j] += eps;
-                    u_m[k][j] -= eps;
-
-                    double grad = (compute_cost(x0, self->x_ref, u_p) -
-                                   compute_cost(x0, self->x_ref, u_m)) / (2.0*eps);
-
-                    self->u_seq[k][j] -= OPT_LR * grad;
-
-                    if (self->u_seq[k][j] > U_MAX) self->u_seq[k][j] = U_MAX;
-                    if (self->u_seq[k][j] < U_MIN) self->u_seq[k][j] = U_MIN;
-                }
-            }
-        }
-
-        // Output the optimal control signal
-        lf_set(u_apply, self->u_seq[0][0]);
-
-        // Shift horizon
-        for (int k = 0; k < HORIZON - 1; k++) {
-            memcpy(self->u_seq[k], self->u_seq[k+1], NU * sizeof(double));
-        }
-        memset(self->u_seq[HORIZON-1], 0, NU * sizeof(double));
-        
-    =} deadline(1 msec) {=
-        // If gradient descent takes > 1ms, LF gracefully catches it!
-        printf("[WARNING] Optimizer missed 1ms real-time deadline!\n");
-    =}
-}
-
-// MASTER ASSEMBLY LINE 
-main reactor {
-    ref = new Reference()
-    plant = new Plant()
-    optimizer = new Optimizer()
-
-    // Explicit Data Flow (The Arrows)
-    ref.x_ref -> optimizer.x_ref_in
-    plant.x -> optimizer.x_current
-    optimizer.u_apply -> plant.u
-}
