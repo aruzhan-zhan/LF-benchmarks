@@ -70,7 +70,7 @@ The target is synced to physical time (`fast: false`), and the reactor explicitl
 ```
 // Runs math for an unknown amount of physical time
 for (int iter = 0; iter < OPT_ITER; iter++) {
-    // ... heavy gradient descent math ...
+    // ... some heavy math ...
 }
 // Blindly applies answer, even if 5 milliseconds late
 ```
@@ -85,7 +85,7 @@ target C {
 
 ```
 reaction(x_current) -> u_apply {=
-    // ... heavy gradient descent math ...
+    // ... some heavy math ...
 =} deadline(1 msec) {=
     // Safely catches execution if math exceeds physical deadline
     printf("[WARNING] Optimizer missed 1ms real-time deadline!\n");
