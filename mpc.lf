@@ -201,3 +201,15 @@ reactor Optimizer {
         lf_set(u_apply, 0.0);
     =}
 } // Closing Optimizer reactor
+
+main reactor {
+    // 1. Instantiate
+    ref = new Reference()
+    plant = new Plant()
+    optimizer = new Optimizer()
+    
+    // 2. Wire ports together
+    ref.x_ref -> optimizer.x_ref_in
+    plant.x -> optimizer.x_current
+    optimizer.u_apply -> plant.u
+}
