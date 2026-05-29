@@ -46,7 +46,7 @@ The easiest way to evaluate the system is to run the automated Python benchmark 
 ```bash
 python3 run_benchmark.py
 ```
-![Generated Performance Graph](results/robot_performace.png)
+![Generated Performance Graph](results/robot_performance.png)
 
 ### Manual Compilation
 To manually compile and run the LF architecture with physical time enforcement:
