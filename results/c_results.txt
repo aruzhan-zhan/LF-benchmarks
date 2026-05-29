@@ -1,0 +1,25 @@
+=== Multithreaded MPC — Robotics Motion Control ===
+    NX=2  NU=1  N=10  dt=0.001 s
+
+[sensor ] thread started
+[predict] thread started
+[optim  ] thread started
+[actuate] thread started
+[actuate] tick= 500 | pos=0.0001 (ref=0.0000) | vel=0.0000 | u=-0.0000
+[ref    ] reference → 1.0
+[actuate] tick=1000 | pos=-0.0000 (ref=1.0000) | vel=0.0008 | u=0.0047
+[actuate] tick=1500 | pos=0.0012 (ref=1.0000) | vel=0.0032 | u=0.0045
+[actuate] tick=2000 | pos=0.0032 (ref=1.0000) | vel=0.0054 | u=0.0043
+[ref    ] reference → 0.5
+[actuate] tick=2500 | pos=0.0067 (ref=0.5000) | vel=0.0075 | u=0.0016
+[actuate] tick=3000 | pos=0.0106 (ref=0.5000) | vel=0.0083 | u=0.0016
+[actuate] tick=3500 | pos=0.0152 (ref=0.5000) | vel=0.0091 | u=0.0015
+[actuate] tick=4000 | pos=0.0200 (ref=0.5000) | vel=0.0098 | u=0.0014
+[actuate] tick=4500 | pos=0.0251 (ref=0.5000) | vel=0.0105 | u=0.0013
+[predict] thread exiting
+[optim  ] thread exiting
+[actuate] thread exiting
+[sensor ] thread exiting (tick=5000)
+
+=== Simulation complete ===
+Final plant state: pos=0.0306  vel=0.0111

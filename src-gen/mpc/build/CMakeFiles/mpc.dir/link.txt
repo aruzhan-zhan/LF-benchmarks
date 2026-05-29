@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/mpc.dir/lib/schedule.c.o CMakeFiles/mpc.dir/_mpc_main.c.o CMakeFiles/mpc.dir/_reference.c.o CMakeFiles/mpc.dir/_plant.c.o CMakeFiles/mpc.dir/_optimizer.c.o CMakeFiles/mpc.dir/mpc.c.o -o mpc  -lm core/libreactor-c.a core/liblf-low-level-platform-impl.a core/liblf-platform-impl.a 

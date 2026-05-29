@@ -1,0 +1,24 @@
+---- Start execution on Fri May 29 13:29:36 2026 ---- plus 219598086 nanoseconds
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick= 500 | pos=-0.0000 | vel=-0.0000 | u=-0.0000
+[actuate] tick=1000 | pos=-0.0000 | vel=-0.0000 | u=0.0000
+[ref    ] reference -> 1.0
+[actuate] tick=1500 | pos=0.0006 | vel=0.0023 | u=0.0046
+[actuate] tick=2000 | pos=0.0023 | vel=0.0046 | u=0.0044
+[actuate] tick=2500 | pos=0.0051 | vel=0.0067 | u=0.0041
+[actuate] tick=3000 | pos=0.0090 | vel=0.0087 | u=0.0039
+[ref    ] reference -> 0.5
+[actuate] tick=3500 | pos=0.0136 | vel=0.0095 | u=0.0014
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick=4000 | pos=0.0185 | vel=0.0101 | u=0.0013
+[actuate] tick=4500 | pos=0.0237 | vel=0.0108 | u=0.0013
+[actuate] tick=5000 | pos=0.0293 | vel=0.0114 | u=0.0012
+---- Elapsed logical time (in nsec): 5,000,000,000
+---- Elapsed physical time (in nsec): 5,000,550,480

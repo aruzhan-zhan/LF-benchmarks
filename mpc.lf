@@ -131,7 +131,7 @@ reactor Plant {
 
         if (self->tick % 500 == 0) {
             printf("[actuate] tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
-                   self->tick, self->plant_x[0], self->plant_x[1], x1, u_val);
+                   self->tick, self->plant_x[0], self->plant_x[1], u_val);
         }
     =}
 } // closing Plant reactor
@@ -163,7 +163,7 @@ reactor Optimizer {
 
         // 2. memory for the math
         static double u_seq[HORIZON][NU] = {0};
-        double eps = 1e-5
+        double eps = 1e-5;
 
         // 3. C math (Gradient Descent)
         for (int iter = 0; iter < OPT_ITER; iter++) {

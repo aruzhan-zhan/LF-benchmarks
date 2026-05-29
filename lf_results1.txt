@@ -1,0 +1,36 @@
+---- Start execution on Fri May 29 13:34:54 2026 ---- plus 241632811 nanoseconds
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick= 500 | pos=-0.0000 | vel=-0.0000 | u=-0.0000
+[actuate] tick=1000 | pos=-0.0000 | vel=-0.0000 | u=0.0000
+[ref    ] reference -> 1.0
+[actuate] tick=1500 | pos=0.0006 | vel=0.0023 | u=0.0046
+[actuate] tick=2000 | pos=0.0023 | vel=0.0046 | u=0.0044
+[actuate] tick=2500 | pos=0.0051 | vel=0.0067 | u=0.0041
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick=3000 | pos=0.0090 | vel=0.0087 | u=0.0039
+[ref    ] reference -> 0.5
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick=3500 | pos=0.0135 | vel=0.0094 | u=0.0014
+[actuate] tick=4000 | pos=0.0184 | vel=0.0101 | u=0.0013
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick=4500 | pos=0.0237 | vel=0.0108 | u=0.0013
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.
+[actuate] tick=5000 | pos=0.0292 | vel=0.0114 | u=0.0012
+---- Elapsed logical time (in nsec): 5,000,000,000
+---- Elapsed physical time (in nsec): 5,000,519,404
