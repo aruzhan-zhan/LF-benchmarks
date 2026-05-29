@@ -1,0 +1,2 @@
+/usr/bin/ar qc /mnt/c/Users/Aida/LF-benchmarks/fed-gen/mpc/src-gen/RTI/trace/impl/lib/lf-trace-impl.a "CMakeFiles/lf-trace-impl.dir/__/__/__/trace/impl/src/trace_impl.c.o"
+/usr/bin/ranlib /mnt/c/Users/Aida/LF-benchmarks/fed-gen/mpc/src-gen/RTI/trace/impl/lib/lf-trace-impl.a

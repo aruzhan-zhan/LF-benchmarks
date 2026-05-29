@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf-low-level-platform-impl.a "CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o" "CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o" "CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o" "CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o"
+/usr/bin/ranlib liblf-low-level-platform-impl.a

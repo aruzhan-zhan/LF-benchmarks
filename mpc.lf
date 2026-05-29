@@ -1,6 +1,5 @@
 target C {
     timeout: 5 sec,
-    fast: false
 }
 
 preamble {=
@@ -202,7 +201,7 @@ reactor Optimizer {
     =}
 } // Closing Optimizer reactor
 
-main reactor {
+federated reactor {
     // 1. Instantiate
     ref = new Reference()
     plant = new Plant()
