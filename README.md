@@ -33,7 +33,7 @@ The primary goal of this project is to eliminate the non-determinism, race condi
 To compile and run this benchmark, ensure you have the following installed on a Linux/WSL environment:
 * `gcc` and `cmake`
 * `lfc` (Lingua Franca Compiler)
-* `python3` and `matplotlib` (for the test harness)
+* `python3`
 
 ### Running the Python Test Harness
 The easiest way to evaluate the system is to run the automated Python benchmark script. This script compiles the Lingua Franca code, executes the 5-second real-time simulation and parses the terminal output.
