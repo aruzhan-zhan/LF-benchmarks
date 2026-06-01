@@ -25,14 +25,9 @@ The primary goal of this project is to eliminate the non-determinism, race condi
 
 ![System Architecture Diagram](assets/architecture.png)
 
-The system is composed of three primary LF Reactors executing a 1kHz control loop:
-1. **Reference (Remote Control):** Dispatches asynchronous positional targets to the system.
-2. **Plant (Sensors & Actuators):** Simulates the physical robot chassis, applying motor voltages and reading noisy sensor data every 1 millisecond.
-3. **Optimizer (The Brain):** Performs heavy matrix calculations (Gradient Descent) to solve the MPC cost function and generate optimal motor commands.
-
 ---
 
-## 🚀 Quick Start & Benchmarking
+## Quick Start and Benchmarking
 
 ### Prerequisites
 To compile and run this benchmark, ensure you have the following installed on a Linux/WSL environment:
@@ -41,12 +36,11 @@ To compile and run this benchmark, ensure you have the following installed on a 
 * `python3` and `matplotlib` (for the test harness)
 
 ### Running the Python Test Harness
-The easiest way to evaluate the system is to run the automated Python benchmark script. This script compiles the Lingua Franca code, executes the 5-second real-time simulation, parses the terminal output, and generates a performance graph.
+The easiest way to evaluate the system is to run the automated Python benchmark script. This script compiles the Lingua Franca code, executes the 5-second real-time simulation and parses the terminal output.
 
 ```bash
 python3 run_benchmark.py
 ```
-![Generated Performance Graph](results/robot_performance.png)
 
 ### Manual Compilation
 To manually compile and run the LF architecture with physical time enforcement:
@@ -89,6 +83,51 @@ The C thread lagged and missed the 1ms hardware deadline, but silently ignored i
 [actuate] tick=4000 | pos=0.0184 | vel=0.0101 | u=0.0013
 ```
 Lingua Franca measures physical time against its logical timeline. When the heavy gradient descent math exceeded the strict 1ms hardware deadline due to OS jitter, LF intercepted the failure, aborted the stale math, and triggered the deadline(1 msec) block to safely apply u=0.0 (emergency braking).
+
+## 🌐 Distributed Execution (RTI)
+![RTI diagram](results/RTI_diagram.png)
+
+This benchmark can be compiled as a distributed network system using Lingua Franca's Run-Time Infrastructure (RTI). By changing the root component to a `federated reactor`, the compiler automatically generates a network server and splits the application into standalone executables (`mpc_plant`, `mpc_optimizer`, `mpc_ref`). 
+
+The RTI acts as a central time-keeper, utilizing clock-synchronization protocols to coordinate logical time across physical TCP/IP network bounds, demonstrating how Lingua Franca scales seamlessly from multi-core threads to multi-node distributed systems.
+
+RTI (Run-Time Infrastrtucture) is a central software bus that allows different programs, running on different computers, to talk to each other and share a single unified timeline. It handles the networking, the message routing, and most importantly, the synchronization of time across physical boundaries.
+
+In standard C, if you want a robot's brain to run on a laptop and its spinal cord to run on a chassis, you have to manually write thousands of lines of TCP/IP socket code and deal with network lag causing the robot to crash.
+
+In Lingua Franca, the RTI is an automatically generated Time Conductor.
+When you compile a distributed program, LF builds a dedicated server (the RTI) whose sole job is to force every machine on the network to obey strict Logical Time. Before any node is allowed to execute tick 1500, the RTI ensures that all network messages from tick 1499 have been delivered, and that everyone's physical clocks are perfectly synchronized. It provides deterministic, real-time safety guarantees over an unpredictable Wi-Fi/Ethernet network.
+
+How We Implemented It (The Architecture)
+
+We changed main reactor to federated reactor.
+
+By doing this, the Lingua Franca compiler completely changed its output. Instead of building one executable, it built four independent network binaries:
+
+RTI (The central time-keeper)
+
+mpc_ref (The Remote Control)
+
+mpc_optimizer (The Brain performing gradient descent)
+
+mpc_plant (The Robot Chassis reading sensors and applying voltage)
+
+Because everything ran on my single machine for the benchmark, Lingua Franca intelligently bundled these into a single magic launcher (./bin/mpc) that spun up the RTI server in the background and connected the three federates via local TCP/IP sockets.
+
+How It Works (The Execution Lifecycle)
+
+Phase 1: The Clock Sync (Google Spanner Protocol): The RTI boots up first and waits. As plant, optimizer, and ref connect to the network, the RTI refuses to let the simulation start. It first forces them to exchange dozens of ping messages to measure the network latency between them. It then locks their internal clocks together. You saw this when all three federates reported the exact same starting nanosecond (1780087519273407295).
+
+Phase 2: The "Cold Start" Latency Catch: Once execution begins, data must flow through network sockets. Initially, routing the heavy matrix math from the Optimizer to the Plant took slightly longer than the strict 1-millisecond hardware deadline. Lingua Franca detected this network lag immediately. Instead of using stale, delayed packets, the Plant caught the violation and safely applied the emergency brakes (u=-0.0000).
+
+Phase 3: Flawless Lock-Step Execution: Once the network sockets warmed up, the RTI coordinated the distributed system flawlessly. Over a 5.000-second logical simulation, the total physical execution time was 5.002 seconds. The RTI managed all the TCP/IP network overhead in just 2 milliseconds.
+```
+federated reactor {
+    ...
+}
+```
+![RTI run](results/rti1.png)
+![RTI run](results/rti2.png)
 
 ### 📊 Performance Results & Real-Time Safety
 The "Missed Deadline" Feature
