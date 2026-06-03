@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblf-network-impl.a "CMakeFiles/lf-network-impl.dir/__/network/impl/src/net_util.c.o" "CMakeFiles/lf-network-impl.dir/__/network/impl/src/socket_common.c.o" "CMakeFiles/lf-network-impl.dir/__/network/impl/src/lf_socket_support.c.o"
-/usr/bin/ranlib liblf-network-impl.a
