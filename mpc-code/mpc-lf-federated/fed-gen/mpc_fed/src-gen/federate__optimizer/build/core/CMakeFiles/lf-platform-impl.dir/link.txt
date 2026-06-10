@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblf-platform-impl.a "CMakeFiles/lf-platform-impl.dir/__/platform/impl/platform.c.o"
+/usr/bin/ranlib liblf-platform-impl.a

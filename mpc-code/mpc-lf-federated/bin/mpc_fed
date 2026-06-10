@@ -1,0 +1,170 @@
+#!/bin/bash -l
+# Launcher for federated mpc_fed.lf Lingua Franca program.
+# Uncomment to specify to behave as close as possible to the POSIX standard.
+# set -o posix
+
+# Enable job control
+set -m
+shopt -s huponexit
+
+# Parse launcher arguments.
+LOG_TO_FILE=false
+USE_TMUX=false
+SLEEP_TIME=1
+SLEEP_TIME_SET=false
+REMAINING_ARGS=()
+NEXT_IS_SLEEP=false
+for arg in "$@"; do
+    if [ "$NEXT_IS_SLEEP" = true ]; then
+        SLEEP_TIME="$arg"
+        SLEEP_TIME_SET=true
+        NEXT_IS_SLEEP=false
+    elif [ "$arg" = "--help" ] || [ "$arg" = "-h" ]; then
+        echo "Usage: $0 [-l] [-x|--tmux] [-s|--sleep N] [-h|--help] [FEDERATE_ARGS...]"
+        echo ""
+        echo "Launcher options:"
+        echo "  -l              Log federate output to files instead of stdout"
+        echo "  -x, --tmux      Launch federates and RTI in a tmux session"
+        echo "  -s, --sleep N   Seconds to sleep after launching RTI (default: 1, tmux: 2)"
+        echo "  -h, --help      Show this help message"
+        echo ""
+        echo "All other arguments are forwarded to each federate."
+        echo "For available federate parameters, run a federate binary with --help."
+        exit 0
+    elif [ "$arg" = "-l" ]; then
+        LOG_TO_FILE=true
+    elif [ "$arg" = "--tmux" ] || [ "$arg" = "-x" ]; then
+        USE_TMUX=true
+    elif [ "$arg" = "--sleep" ] || [ "$arg" = "-s" ]; then
+        NEXT_IS_SLEEP=true
+    else
+        REMAINING_ARGS+=("$arg")
+    fi
+done
+
+# Set a trap to kill all background jobs on error or control-C
+# Use two distinct traps so we can see which signal causes this.
+cleanup() {
+    if [ "$EXITED_SUCCESSFULLY" = true ] ; then
+        exit 0
+    else
+        printf "Killing federate %s.\n" ${pids[*]}
+        # The || true clause means this is not an error if kill fails.
+        kill ${pids[@]} || true
+        printf "#### Killing RTI %s.\n" ${RTI}
+        kill ${RTI} || true
+        exit 1
+    fi
+}
+
+trap 'cleanup; exit' EXIT
+
+# Create a random 48-byte text ID for this federation.
+# The likelihood of two federations having the same ID is 1/16,777,216 (1/2^24).
+FEDERATION_ID=`openssl rand -hex 24`
+echo "[36mFederation mpc_fed with Federation ID '$FEDERATION_ID'.[0m"
+if [ "$USE_TMUX" = true ]; then
+    if ! command -v tmux &> /dev/null; then
+        echo "tmux is not installed. Install it using one of the following:"
+        echo "  macOS:          brew install tmux"
+        echo "  Ubuntu/Debian:  sudo apt-get install tmux"
+        echo "  Fedora:         sudo dnf install tmux"
+        echo "  Arch Linux:     sudo pacman -S tmux"
+        exit 1
+    fi
+
+    if [ "$SLEEP_TIME_SET" = false ]; then SLEEP_TIME=2; fi
+
+    SESSION_NAME="mpc_fed_${FEDERATION_ID:0:8}"
+    tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
+
+    FED_PANE_0=$(tmux new-session -d -s "$SESSION_NAME" -P -F '#{pane_id}')
+    ROW_0=$FED_PANE_0
+    COL_TARGET=$ROW_0
+    FED_PANE_0=$COL_TARGET
+    COL_TARGET=$(tmux split-window -h -l 67% -t "$COL_TARGET" -P -F '#{pane_id}')
+    FED_PANE_1=$COL_TARGET
+    COL_TARGET=$(tmux split-window -h -l 50% -t "$COL_TARGET" -P -F '#{pane_id}')
+    FED_PANE_2=$COL_TARGET
+
+    RTI_PANE=$(tmux split-window -f -v -b -l 5 -t "$SESSION_NAME:0" -P -F '#{pane_id}')
+
+    tmux set-option -t "$SESSION_NAME" pane-border-status top
+    tmux set-option -t "$SESSION_NAME" pane-border-format " #{pane_title} "
+    tmux set-option -t "$SESSION_NAME" pane-border-style 'fg=white,bg=colour25'
+    tmux set-option -t "$SESSION_NAME" pane-active-border-style 'fg=white,bg=colour25,bold'
+    tmux set-option -t "$SESSION_NAME" status off
+    tmux set-option -t "$SESSION_NAME" mouse on
+
+    tmux select-pane -t "$RTI_PANE" -T "RTI — Ctrl+C to stop | Ctrl+B d to detach and kill"
+    tmux select-pane -t "$FED_PANE_0" -T "federate__ref"
+    tmux select-pane -t "$FED_PANE_1" -T "federate__plant"
+    tmux select-pane -t "$FED_PANE_2" -T "federate__optimizer"
+
+    tmux send-keys -t "$RTI_PANE" "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/RTI -i ${FEDERATION_ID} -n 3 -c init exchanges-per-interval 10" C-m
+    tmux send-keys -t "$FED_PANE_0" "sleep $SLEEP_TIME && /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__ref -i $FEDERATION_ID ${REMAINING_ARGS[*]}" C-m
+    tmux send-keys -t "$FED_PANE_1" "sleep $SLEEP_TIME && /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__plant -i $FEDERATION_ID ${REMAINING_ARGS[*]}" C-m
+    tmux send-keys -t "$FED_PANE_2" "sleep $SLEEP_TIME && /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__optimizer -i $FEDERATION_ID ${REMAINING_ARGS[*]}" C-m
+
+    tmux select-pane -t "$RTI_PANE"
+    tmux attach-session -t "$SESSION_NAME"
+    tmux kill-session -t "$SESSION_NAME" 2>/dev/null || true
+    EXITED_SUCCESSFULLY=true
+    exit 0
+fi
+#### Host is localhost
+echo "[36m#### Launching the runtime infrastructure (RTI).[0m"
+# The RTI is started first to allow proper boot-up
+# before federates will try to connect.
+# The RTI will be brought back to foreground
+# to be responsive to user inputs after all federates
+# are launched.
+if [ "$LOG_TO_FILE" = true ]; then
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/RTI -i ${FEDERATION_ID} \
+                        -n 3 \
+                        -c init \
+exchanges-per-interval 10 \ >& RTI.log &
+else
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/RTI -i ${FEDERATION_ID} \
+                        -n 3 \
+                        -c init \
+exchanges-per-interval 10 \ &
+fi
+# Store the PID of the RTI
+RTI=$!
+# Wait for the RTI to boot up before
+# starting federates (this could be done by waiting for a specific output
+# from the RTI, but here we use sleep)
+sleep $SLEEP_TIME
+echo "[36m#### Launching the federate federate__ref.[0m"
+if [ "$LOG_TO_FILE" = true ]; then
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__ref -i $FEDERATION_ID "${REMAINING_ARGS[@]}" >& federate__ref.log &
+else
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__ref -i $FEDERATION_ID "${REMAINING_ARGS[@]}" &
+fi
+pids[0]=$!
+echo "[36m#### Launching the federate federate__plant.[0m"
+if [ "$LOG_TO_FILE" = true ]; then
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__plant -i $FEDERATION_ID "${REMAINING_ARGS[@]}" >& federate__plant.log &
+else
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__plant -i $FEDERATION_ID "${REMAINING_ARGS[@]}" &
+fi
+pids[1]=$!
+echo "[36m#### Launching the federate federate__optimizer.[0m"
+if [ "$LOG_TO_FILE" = true ]; then
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__optimizer -i $FEDERATION_ID "${REMAINING_ARGS[@]}" >& federate__optimizer.log &
+else
+    /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/./fed-gen/mpc_fed/bin/federate__optimizer -i $FEDERATION_ID "${REMAINING_ARGS[@]}" &
+fi
+pids[2]=$!
+echo "[36m#### Bringing the RTI back to foreground so it can receive Control-C."
+fg %1
+echo "[36mRTI has exited. Wait for federates to exit.[0m"
+# Wait for launched processes to finish.
+# The errors are handled separately via trap.
+for pid in "${pids[@]}"
+do
+    wait $pid || exit $?
+done
+echo "[36mAll done.[0m"
+EXITED_SUCCESSFULLY=true

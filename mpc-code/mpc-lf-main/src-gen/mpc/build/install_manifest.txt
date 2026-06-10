@@ -1,0 +1,1 @@
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/bin/mpc

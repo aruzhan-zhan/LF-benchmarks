@@ -1,0 +1,16 @@
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/mpc.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/edit_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/rebuild_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/list_install_components.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/install.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/install/local.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles/install/strip.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/reactor-c.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/lf-low-level-platform-impl.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/lf-platform-impl.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/edit_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/rebuild_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/list_install_components.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/install.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/install/local.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/install/strip.dir

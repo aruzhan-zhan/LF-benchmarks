@@ -1,0 +1,17 @@
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/federate__ref.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/edit_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/rebuild_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/list_install_components.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/install.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/install/local.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/CMakeFiles/install/strip.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/reactor-c.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/lf-low-level-platform-impl.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/lf-platform-impl.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/lf-network-impl.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/edit_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/rebuild_cache.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/list_install_components.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/install.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/install/local.dir
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/federate__ref/build/core/CMakeFiles/install/strip.dir

@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/RTI/trace/impl/lib/lf-trace-impl.a "CMakeFiles/lf-trace-impl.dir/__/__/__/trace/impl/src/trace_impl.c.o"
+/usr/bin/ranlib /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/src-gen/RTI/trace/impl/lib/lf-trace-impl.a
