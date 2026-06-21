@@ -7,23 +7,23 @@ The primary goal of this project is to eliminate the non-determinism, race condi
 ### 📂 Project Files
 
 **Source Code**
-* [`mpc-lf-main/mpc.lf`](mpc-code/mpc-lf-main/mpc.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
-* [`mpc-lf-federated/mpc_fed.lf`](mpc-code/mpc-lf-federated/mpc_fed.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
-* [`mpc_threaded.c`](mpc-code/mpc_threaded.c) — The original POSIX-threaded C baseline used for comparison.
+* [`mpc-lf-main/mpc.lf`](mpc/mpc-code/mpc-lf-main/mpc.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
+* [`mpc-lf-federated/mpc_fed.lf`](mpc/mpc-code/mpc-lf-federated/mpc_fed.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
+* [`mpc_threaded.c`](mpc/mpc-code/mpc_threaded.c) — The original POSIX-threaded C baseline used for comparison.
 
 **Benchmarking and Automation**
-* [`run_benchmark.py`](mpc-code/run_benchmark.py) — Python test harness that automates compilation, execution, output parsing, and graph generation.
+* [`run_benchmark.py`](mpc/mpc-code/run_benchmark.py) — Python test harness that automates compilation, execution, output parsing, and graph generation.
 
 **Assets and Diagrams**
-* [`diagrams-and-results/architecture.png`](diagrams-and-results/architecture.png) — Visual representation of the Lingua Franca reactor network and data flow.
+* [`diagrams-and-results/architecture.png`](mpc/diagrams-and-results/architecture.png) — Visual representation of the Lingua Franca reactor network and data flow.
 
 **Execution Results**
-* [`diagrams-and-results/lf_results.txt`](diagrams-and-results/lf_results.txt) — Raw execution log of the time-aware LF simulation.
-* [`diagrams-and-results/c_results.txt`](diagrams-and-results/c_results.txt) — Raw execution log of the standard C multithreaded simulation.
+* [`diagrams-and-results/lf_results.txt`](mpc/diagrams-and-results/lf_results.txt) — Raw execution log of the time-aware LF simulation.
+* [`diagrams-and-results/c_results.txt`](mpc/diagrams-and-results/c_results.txt) — Raw execution log of the standard C multithreaded simulation.
 
 ## System Architecture
 
-![System Architecture Diagram](diagrams-and-results/architecture.png)
+![System Architecture Diagram](mpc/diagrams-and-results/architecture.png)
 
 ---
 
@@ -51,7 +51,7 @@ time ./bin/mpc
 ```
 
 ### Execution Results & Timing Analysis
-![C vs. LF](diagrams-and-results/comparison.png)
+![C vs. LF](mpc/diagrams-and-results/comparison.png)
 
 When comparing the terminal output of the standard C baseline against the Lingua Franca implementation, we observe three critical architectural differences.
 
@@ -85,7 +85,7 @@ The C thread lagged and missed the 1ms hardware deadline, but silently ignored i
 Lingua Franca measures physical time against its logical timeline. When the heavy gradient descent math exceeded the strict 1ms hardware deadline due to OS jitter, LF intercepted the failure, aborted the stale math, and triggered the deadline(1 msec) block to safely apply u=0.0 (emergency braking).
 
 ## 🌐 Distributed Execution (RTI)
-![RTI diagram](diagrams-and-results/RTI_diagram.png)
+![RTI diagram](mpc/diagrams-and-results/RTI_diagram.png)
 
 This benchmark can be compiled as a distributed network system using Lingua Franca's Run-Time Infrastructure (RTI). By changing the root component to a `federated reactor`, the compiler automatically generates a network server and splits the application into standalone executables (`mpc_plant`, `mpc_optimizer`, `mpc_ref`). 
 
