@@ -1,8 +1,8 @@
-# Install script for directory: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc
+# Install script for directory: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main")
+  set(CMAKE_INSTALL_PREFIX "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -44,7 +44,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/cmake_install.cmake")
+  include("/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
@@ -54,7 +54,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
          FILE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/mpc"
          RPATH "")
   endif()
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE MESSAGE_NEVER FILES "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/mpc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE MESSAGE_NEVER FILES "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/mpc")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/mpc" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/mpc")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -71,5 +71,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

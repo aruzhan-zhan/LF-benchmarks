@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc
+CMAKE_SOURCE_DIR = /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build
+CMAKE_BINARY_DIR = /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build
 
 # Include any dependencies generated for this target.
 include core/CMakeFiles/lf-low-level-platform-impl.dir/depend.make
@@ -70,60 +70,60 @@ include core/CMakeFiles/lf-low-level-platform-impl.dir/progress.make
 include core/CMakeFiles/lf-low-level-platform-impl.dir/flags.make
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/flags.make
-core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c
+core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o -c /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o -c /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.i"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.i
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.i
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.s"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.s
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.s
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/flags.make
-core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c
+core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o -c /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o -c /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.i"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.i
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.i
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.s"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.s
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.s
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/flags.make
-core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c
+core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o -c /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o -c /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.i"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.i
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.i
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.s"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.s
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.s
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/flags.make
-core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c
+core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o: core/CMakeFiles/lf-low-level-platform-impl.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o -c /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o -MF CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o.d -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o -c /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.i"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.i
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c > CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.i
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.s"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.s
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && /usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c -o CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.s
 
 # Object files for target lf-low-level-platform-impl
 lf__low__level__platform__impl_OBJECTS = \
@@ -141,19 +141,19 @@ core/liblf-low-level-platform-impl.a: core/CMakeFiles/lf-low-level-platform-impl
 core/liblf-low-level-platform-impl.a: core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o
 core/liblf-low-level-platform-impl.a: core/CMakeFiles/lf-low-level-platform-impl.dir/build.make
 core/liblf-low-level-platform-impl.a: core/CMakeFiles/lf-low-level-platform-impl.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C static library liblf-low-level-platform-impl.a"
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -P CMakeFiles/lf-low-level-platform-impl.dir/cmake_clean_target.cmake
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lf-low-level-platform-impl.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking C static library liblf-low-level-platform-impl.a"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -P CMakeFiles/lf-low-level-platform-impl.dir/cmake_clean_target.cmake
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lf-low-level-platform-impl.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 core/CMakeFiles/lf-low-level-platform-impl.dir/build: core/liblf-low-level-platform-impl.a
 .PHONY : core/CMakeFiles/lf-low-level-platform-impl.dir/build
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/clean:
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -P CMakeFiles/lf-low-level-platform-impl.dir/cmake_clean.cmake
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core && $(CMAKE_COMMAND) -P CMakeFiles/lf-low-level-platform-impl.dir/cmake_clean.cmake
 .PHONY : core/CMakeFiles/lf-low-level-platform-impl.dir/clean
 
 core/CMakeFiles/lf-low-level-platform-impl.dir/depend:
-	cd /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/core /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/lf-low-level-platform-impl.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/build/core/CMakeFiles/lf-low-level-platform-impl.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : core/CMakeFiles/lf-low-level-platform-impl.dir/depend
 

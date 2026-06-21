@@ -1,8 +1,8 @@
 core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o: \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c \
  /usr/include/stdc-predef.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/low_level_platform.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/tag/api/tag.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/low_level_platform.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/tag/api/tag.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -28,9 +28,9 @@ core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf
  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h \
  /usr/include/x86_64-linux-gnu/bits/pthread_stack_min.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h /usr/include/assert.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_atomic.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_atomic.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_linux_support.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_linux_support.h \
  /usr/include/time.h /usr/include/x86_64-linux-gnu/bits/time.h \
  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
@@ -51,9 +51,9 @@ core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf
  /usr/include/x86_64-linux-gnu/bits/unistd.h \
  /usr/include/x86_64-linux-gnu/bits/unistd-decl.h \
  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_tag_64_32.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_tag_64_32.h \
  /usr/include/inttypes.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_POSIX_threads_support.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_POSIX_threads_support.h \
  /usr/include/pthread.h /usr/include/sched.h \
  /usr/include/x86_64-linux-gnu/bits/sched.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h \
@@ -67,4 +67,4 @@ core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf
  /usr/include/x86_64-linux-gnu/bits/setjmp.h \
  /usr/include/x86_64-linux-gnu/bits/types/__sigset_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_platform_util.h
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/api/platform/lf_platform_util.h

@@ -1,7 +1,7 @@
 core/CMakeFiles/reactor-c.dir/utils/hashset/hashset.c.o: \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/core/utils/hashset/hashset.c \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/utils/hashset/hashset.c \
  /usr/include/stdc-predef.h \
- /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/hashset/hashset.h \
+ /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/hashset/hashset.h \
  /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \

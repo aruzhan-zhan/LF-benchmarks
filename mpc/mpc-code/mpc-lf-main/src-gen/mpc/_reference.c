@@ -9,32 +9,34 @@
 void _referencereaction_function_0(void* instance_args) {
     _reference_self_t* self = (_reference_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _reference_x_ref_t* x_ref = &self->_lf_x_ref;
-    #line 83 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/mpc.lf"
+    #line 82 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     state_t ref = {{0.0, 0.0}};
     lf_set(x_ref, ref);
-#line 16 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
+#line 16 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
 }
 #include "include/api/reaction_macros_undef.h"
 #include "include/api/reaction_macros.h"
 void _referencereaction_function_1(void* instance_args) {
     _reference_self_t* self = (_reference_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _reference_x_ref_t* x_ref = &self->_lf_x_ref;
-    #line 88 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/mpc.lf"
-    state_t ref = {{1.0, 0.0}};
-    lf_set(x_ref, ref);
-    printf("[ref    ] reference -> 1.0\n");
-#line 27 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
+    #line 87 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+     state_t ref = {{1.0, 0.0}};
+     lf_set(x_ref, ref);
+     printf("[ref    ] T=%lld ms | reference -> 1.0\n",
+    lf_time_logical_elapsed() / 1000000LL);
+#line 28 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
 }
 #include "include/api/reaction_macros_undef.h"
 #include "include/api/reaction_macros.h"
 void _referencereaction_function_2(void* instance_args) {
     _reference_self_t* self = (_reference_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _reference_x_ref_t* x_ref = &self->_lf_x_ref;
-    #line 94 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/mpc.lf"
-    state_t ref = {{0.5, 0.0}};
-    lf_set(x_ref, ref);
-    printf("[ref    ] reference -> 0.5\n");
-#line 38 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
+    #line 94 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+     state_t ref = {{0.5, 0.0}};
+     lf_set(x_ref, ref);
+     printf("[ref    ] T=%lld ms | reference -> 0.5\n",
+    lf_time_logical_elapsed() / 1000000LL);
+#line 40 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c"
 }
 #include "include/api/reaction_macros_undef.h"
 _reference_self_t* new__reference() {

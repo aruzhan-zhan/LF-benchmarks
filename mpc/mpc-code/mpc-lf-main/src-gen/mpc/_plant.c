@@ -9,7 +9,7 @@
 void _plantreaction_function_0(void* instance_args) {
     _plant_self_t* self = (_plant_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _plant_x_t* x = &self->_lf_x;
-    #line 111 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/mpc.lf"
+    #line 112 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     double noise = 0.0001 * sin((double)self->tick*0.37);
     state_t current_x;
     current_x.data[0] = self->plant_x[0] + noise;
@@ -17,7 +17,7 @@ void _plantreaction_function_0(void* instance_args) {
     
     lf_set(x, current_x);
     self->tick++;
-#line 21 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
+#line 21 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
 }
 #include "include/api/reaction_macros_undef.h"
 #include "include/api/reaction_macros.h"
@@ -25,22 +25,23 @@ void _plantreaction_function_1(void* instance_args) {
     _plant_self_t* self = (_plant_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _plant_u_t* u = self->_lf_u;
     int u_width = self->_lf_u_width; SUPPRESS_UNUSED_WARNING(u_width);
-    #line 122 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/mpc.lf"
-    double u_val = u->value;
-    double x_new[NX];
+    #line 123 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+     double u_val = u->value;
+     double x_new[NX];
     
-    // The Physics math
-    x_new[0] = A[0][0]*self->plant_x[0] + A[0][1]*self->plant_x[1] + B[0][0]*u_val;
-    x_new[1] = A[1][0]*self->plant_x[0] + A[1][1]*self->plant_x[1] + B[1][0]*u_val;
+     // The Physics math
+     x_new[0] = A[0][0]*self->plant_x[0] + A[0][1]*self->plant_x[1] + B[0][0]*u_val;
+     x_new[1] = A[1][0]*self->plant_x[0] + A[1][1]*self->plant_x[1] + B[1][0]*u_val;
     
-    self->plant_x[0] = x_new[0];
-    self->plant_x[1] = x_new[1];
+     self->plant_x[0] = x_new[0];
+     self->plant_x[1] = x_new[1];
     
-    if (self->tick % 500 == 0) {
-        printf("[actuate] tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
-               self->tick, self->plant_x[0], self->plant_x[1], u_val);
-    }
-#line 44 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
+     if (self->tick % 500 == 0) {
+         printf("[actuate] T=%lld ms | tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
+    lf_time_logical_elapsed() / 1000000LL,
+    self->tick, self->plant_x[0], self->plant_x[1], u_val);
+     }
+#line 45 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
 }
 #include "include/api/reaction_macros_undef.h"
 _plant_self_t* new__plant() {

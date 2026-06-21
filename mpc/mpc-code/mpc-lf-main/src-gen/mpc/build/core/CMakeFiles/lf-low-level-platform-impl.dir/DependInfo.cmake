@@ -8,10 +8,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_atomic_gcc_clang.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_atomic_gcc_clang.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_linux_support.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_linux_support.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_platform_util.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_platform_util.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/low_level_platform/impl/src/lf_unix_clock_support.c" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o" "gcc" "core/CMakeFiles/lf-low-level-platform-impl.dir/__/low_level_platform/impl/src/lf_unix_clock_support.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

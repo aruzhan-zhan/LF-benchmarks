@@ -1,8 +1,8 @@
-# Install script for directory: /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/core
+# Install script for directory: /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main")
+  set(CMAKE_INSTALL_PREFIX "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

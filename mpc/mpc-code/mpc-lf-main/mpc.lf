@@ -1,6 +1,5 @@
 target C {
     timeout: 5 sec,
-    logging: debug
 }
 
 preamble {=
@@ -87,13 +86,15 @@ reactor Reference{
     reaction(t1) -> x_ref {=
         state_t ref = {{1.0, 0.0}};
         lf_set(x_ref, ref);
-        printf("[ref    ] reference -> 1.0\n");
+        printf("[ref    ] T=%lld ms | reference -> 1.0\n",
+       lf_time_logical_elapsed() / 1000000LL);
     =}
 
     reaction(t2) -> x_ref {=
         state_t ref = {{0.5, 0.0}};
         lf_set(x_ref, ref);
-        printf("[ref    ] reference -> 0.5\n");
+        printf("[ref    ] T=%lld ms | reference -> 0.5\n",
+       lf_time_logical_elapsed() / 1000000LL);
     =}
 }
 
@@ -130,8 +131,9 @@ reactor Plant {
         self->plant_x[1] = x_new[1];
 
         if (self->tick % 500 == 0) {
-            printf("[actuate] tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
-                   self->tick, self->plant_x[0], self->plant_x[1], u_val);
+            printf("[actuate] T=%lld ms | tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
+       lf_time_logical_elapsed() / 1000000LL,
+       self->tick, self->plant_x[0], self->plant_x[1], u_val);
         }
     =}
 } // closing Plant reactor
@@ -197,7 +199,10 @@ reactor Optimizer {
         memset(u_seq[HORIZON-1], 0, NU * sizeof(double));
     =} deadline(1 msec) {=
         // 5. Hardware safety net
-        printf("[WARNING] Optimizer missed 1ms deadline! Applying emergency brakes.\n");
+        printf("[WARNING] T_logical=%lld ms | T_physical=%lld ms | "
+       "Optimizer missed 1ms deadline! Applying emergency brakes.\n",
+       lf_time_logical_elapsed() / 1000000LL,
+       lf_time_physical_elapsed() / 1000000LL);
         lf_set(u_apply, 0.0);
     =}
 } // Closing Optimizer reactor

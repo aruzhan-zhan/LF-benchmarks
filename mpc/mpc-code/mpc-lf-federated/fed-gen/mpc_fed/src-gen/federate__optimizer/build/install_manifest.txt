@@ -1,1 +1,0 @@
-/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-federated/fed-gen/mpc_fed/bin/federate__optimizer

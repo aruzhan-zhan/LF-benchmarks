@@ -1,2 +1,8 @@
-run_log.txt
+# Lingua Franca generated/build output
+**/fed-gen/
+**/src-gen/
+**/bin/
+
+# logs/results
 *.log
+run_log.txt

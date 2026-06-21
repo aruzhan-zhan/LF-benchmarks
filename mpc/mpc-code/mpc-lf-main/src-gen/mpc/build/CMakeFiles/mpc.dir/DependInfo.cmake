@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.c" "CMakeFiles/mpc.dir/_mpc_main.c.o" "gcc" "CMakeFiles/mpc.dir/_mpc_main.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c" "CMakeFiles/mpc.dir/_optimizer.c.o" "gcc" "CMakeFiles/mpc.dir/_optimizer.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c" "CMakeFiles/mpc.dir/_plant.c.o" "gcc" "CMakeFiles/mpc.dir/_plant.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c" "CMakeFiles/mpc.dir/_reference.c.o" "gcc" "CMakeFiles/mpc.dir/_reference.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/lib/schedule.c" "CMakeFiles/mpc.dir/lib/schedule.c.o" "gcc" "CMakeFiles/mpc.dir/lib/schedule.c.o.d"
-  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc-code/mpc-lf-main/src-gen/mpc/mpc.c" "CMakeFiles/mpc.dir/mpc.c.o" "gcc" "CMakeFiles/mpc.dir/mpc.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.c" "CMakeFiles/mpc.dir/_mpc_main.c.o" "gcc" "CMakeFiles/mpc.dir/_mpc_main.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c" "CMakeFiles/mpc.dir/_optimizer.c.o" "gcc" "CMakeFiles/mpc.dir/_optimizer.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c" "CMakeFiles/mpc.dir/_plant.c.o" "gcc" "CMakeFiles/mpc.dir/_plant.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.c" "CMakeFiles/mpc.dir/_reference.c.o" "gcc" "CMakeFiles/mpc.dir/_reference.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/lib/schedule.c" "CMakeFiles/mpc.dir/lib/schedule.c.o" "gcc" "CMakeFiles/mpc.dir/lib/schedule.c.o.d"
+  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/mpc.c" "CMakeFiles/mpc.dir/mpc.c.o" "gcc" "CMakeFiles/mpc.dir/mpc.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
