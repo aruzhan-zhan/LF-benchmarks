@@ -231,3 +231,115 @@ reaction(x_current) -> u_apply {=
     // Trigger emergency braking logic here
 =}
 ```
+
+# Why is User CPU So Low? (0.001 s)
+
+When benchmarking the Lingua Franca MPC controller against the C baseline:
+
+```
+$ time ./bin/mpc > lf_results.txt
+real    0m5.023s
+user    0m0.001s     ← almost zero
+sys     0m0.592s
+
+$ time ./mpc_threaded > c_results.txt
+real    0m6.049s
+user    0m6.052s     ← full core, 6 seconds
+sys     0m0.258s
+```
+
+## The LF runtime is event-driven, it sleeps between tags
+
+A **tag** is a `(time, microstep)` pair representing a logical instant. In our MPC, the Plant's `timer t(0, 1 msec)` creates a new tag every 1 ms, giving us 5,000 tags over the 5-second run.
+
+At each tag, the runtime processes all triggered reactions (the level 0→5 pipeline: sensor → reference → optimizer → actuator). For our small NX=2 problem, this takes roughly **0.2 µs per tick**.
+
+After all reactions complete, the runtime calls `_lf_next_locked()`, which sleeps until the next tag is due, typically ~1 ms away. During that sleep, **zero user CPU is consumed**.
+
+## The sleep chain in reactor-c
+
+The call chain from "all reactions done" to "thread asleep" is:
+
+```
+_lf_next_locked()                         // reactor_threaded.c - advance to next tag
+  → get_next_event_tag(env)               // peek at event queue: next tag is 1 ms away
+  → wait_until(next_tag.time, &cond)      // reactor_threaded.c - sleep until physical time catches up
+    → lf_clock_cond_timedwait(cond, t)    // platform layer - OS-level timed wait
+      → _lf_cond_timedwait(cond, t)       // lf_POSIX_threads_support.c
+        → pthread_cond_timedwait(...)     // POSIX - thread removed from CPU entirely
+          → futex(FUTEX_WAIT_BITSET)      // Linux kernel - hardware timer set, thread sleeps
+```
+
+### The key function: `_lf_cond_timedwait`
+
+```c
+// From lf_POSIX_threads_support.c
+int _lf_cond_timedwait(lf_cond_t* cond, instant_t wakeup_time) {
+  // Convert nanoseconds to the struct that POSIX expects
+  struct timespec timespec_absolute_time = convert_ns_to_timespec(wakeup_time);
+
+  // THIS LINE puts the thread to sleep:
+  int return_value = pthread_cond_timedwait(
+      (pthread_cond_t*)&cond->condition,    // the "wake-up signal receiver"
+      (pthread_mutex_t*)cond->mutex,         // mutex released while sleeping
+      &timespec_absolute_time                // absolute wall-clock deadline
+  );
+
+  // Translate OS error code to LF constant
+  switch (return_value) {
+  case ETIMEDOUT:
+    return_value = LF_TIMEOUT;  // "I slept the full time"
+    break;
+  default:
+    break;                      // "I was woken early by a signal"
+  }
+  return return_value;
+}
+```
+
+When `pthread_cond_timedwait` is called, the OS kernel:
+
+1. Releases the mutex (so other threads aren't blocked)
+2. Sets a hardware timer for the requested wakeup time
+3. **Removes the thread from the CPU's run queue entirely**
+
+The thread is now "sleeping." The CPU executes **zero instructions** for this thread. When the hardware timer fires (~1 ms later), the kernel puts the thread back on the run queue, and the program resumes.
+
+### The caller: `wait_until()`
+
+```c
+// From reactor_threaded.c
+bool wait_until(instant_t wait_until_time, lf_cond_t* condition) {
+    // Check if we've already passed the target time
+    interval_t wait_duration = wait_until_time - lf_time_physical();
+    if (wait_duration < 0) {
+        return true;  // already past this time, no sleep needed
+    }
+
+    // Sleep until timeout or early wake-up
+    if (lf_clock_cond_timedwait(condition, wait_until_time) != LF_TIMEOUT) {
+        return false;  // woken early, caller should re-check event queue
+    } else {
+        return true;   // slept the full duration, ready for next tag
+    }
+}
+```
+
+## Per-tick CPU breakdown
+
+Each tick takes 1 ms = 1,000 µs of wall-clock time. Across 5,000 ticks:
+
+| | Per tick | Total (5,000 ticks) |
+|---|---|---|
+| Code running (MPC math, `lf_set`, etc.) | ~0.2 µs | 0.001 s (`user`) |
+| Kernel work (sleep/wake overhead) | ~118 µs | 0.592 s (`sys`) |
+| Truly asleep (zero CPU) | ~882 µs | ~4.4 s |
+| **Wall clock** | **1,000 µs** | **5.023 s** (`real`) |
+
+The `user` time is 0.001 s because the NX=2 MPC math is trivially small, roughly 0.2 µs per tick. The `sys` time (0.592 s) is the cumulative kernel overhead of 5,000 sleep/wake cycles. The remaining ~4.4 s is genuine sleep where zero CPU is consumed.
+
+## Conclusion
+
+```
+LF:  0.001 s user CPU  →  the process sleeps between tags, wakes only to compute
+C:   6.052 s user CPU  →  four threads burn a full core on lock contention
