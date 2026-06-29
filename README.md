@@ -264,10 +264,9 @@ The call chain from "all reactions done" to "thread asleep" is:
 _lf_next_locked()                         // core/threaded/reactor_threaded.c: advance to next tag
   → get_next_event_tag(env)               // peek at event queue: next tag is 1 ms away
   → wait_until(next_tag.time, &cond)      // reactor_threaded.c: sleep until physical time catches up
-    → lf_clock_cond_timedwait(cond, t)    // platform layer: OS-level timed wait
-      → _lf_cond_timedwait(cond, t)       // lf_POSIX_threads_support.c
+    → lf_clock_cond_timedwait(cond, t)    // platform layer: OS-level timed wait. core/clock.c
+      → _lf_cond_timedwait(cond, t)       // mpc/low_level_platform/impl/src/lf_POSIX_threads_support.c
         → pthread_cond_timedwait(...)     // POSIX: thread removed from CPU entirely
-          → futex(FUTEX_WAIT_BITSET)      // Linux kernel: hardware timer set, thread sleeps
 ```
 
 ### The key function: `_lf_cond_timedwait`
@@ -326,12 +325,12 @@ LF:  0.001 s user CPU  →  the process sleeps between tags, wakes only to compu
 C:   6.052 s user CPU  →  four threads burn a full core on lock contention
 ```
 
-# How Reactors are Connected in Multicore (Main Reactor) Mode
+# How Reactors are Connected in Multicore (Main Reactor)
 
 All reactors live in a single process, share an address space, and are connected by three compile-time mechanisms:
 
-1. **Pointer aliasing:** ports are connected by making the input point to the output's memory (zero-copy data transfer)
-2. **Static trigger arrays:** each reaction knows its downstream triggers at compile time (zero-cost signaling)
+1. **Pointer aliasing:** ports are connected by making the input point to the output's memory
+2. **Static trigger arrays:** each reaction knows its downstream triggers at compile time
 3. **Level-ordered scheduling:** reactions are dispatched by integer priority, with a worker thread pool (deterministic execution order)
 
 All three are set up once during initialization in the generated `mpc.c` file, inside `_lf_initialize_trigger_objects()`. Nothing is computed or negotiated at runtime.
@@ -354,7 +353,7 @@ Each of these arrows compiles into all three mechanisms described below.
 
 ---
 
-## Mechanism 1: Port Wiring — Pointer Aliasing (Zero-Copy)
+## Mechanism 1: Port Wiring: Pointer Aliasing (Zero-Copy)
 
 Near the bottom of `mpc.c`, under the comment `// Connect inputs and outputs`, each `->` arrow becomes a single pointer assignment:
 
@@ -372,11 +371,9 @@ mpc_plant_self[dst_runtime]->_lf_u =
     (_plant_u_t*)&mpc_optimizer_self[src_runtime]->_lf_u_apply;
 ```
 
-> **Note:** `dst_runtime` and `src_runtime` are both `0` (set in surrounding scope). The variable indirection exists because the same code generator handles banked/multiport reactors. For single-instance reactors, everything collapses to index `[0]`.
-
 ### What this means
 
-The destination's input port **is** the source's output port — same memory address. When the Plant's sensor calls `lf_set(x, current_x)`, it writes into `plant._lf_x.value`. When the Optimizer reads `x_current->value`, it's reading from the exact same struct through a pointer cast. No copy, no buffer, no serialization — the data is "there" the moment `lf_set` writes it.
+The destination's input port **is** the source's output port: same memory address. When the Plant's sensor calls `lf_set(x, current_x)`, it writes into `plant._lf_x.value`. When the Optimizer reads `x_current->value`, it's reading from the exact same struct through a pointer cast. The data is "there" the moment `lf_set` writes it.
 
 ### How to find these lines
 
@@ -388,7 +385,7 @@ Search for `// Connect inputs and outputs` in `mpc.c`. The comments above each b
 
 ---
 
-## Mechanism 2: Trigger Arrays — "When I Produce Output, Who Wakes Up?"
+## Mechanism 2: Trigger Arrays: when the output is produced, who wakes up
 
 Each reaction has a pre-built array of downstream triggers. These are set up in the `// non-nested deferred initialize` section of `mpc.c`.
 
@@ -411,7 +408,7 @@ mpc_ref_self[src_runtime]->_lf__reaction_0
     = &mpc_optimizer_self[dst_runtime]->_lf__x_ref_in;
 ```
 
-> **Note:** All index variables (`src_runtime`, `dst_runtime`, `triggers_index[...]`, `src_channel`) are `0`. Search for `// Point to destination port` to find each line.
+> **Note:** Search for `// Point to destination port` to find each line.
 
 ### The `output_produced` flag
 
@@ -457,7 +454,7 @@ Worker 0: Invoking reaction mpc.plant reaction 0        ← sensor runs, calls l
 
 ---
 
-## Mechanism 3: Level-Ordered Dispatch
+## Mechanism 3: Level order
 
 Each reaction is assigned a topological level at compile time. The scheduler processes all reactions at level N before any at level N+1.
 
