@@ -1,0 +1,154 @@
+/**
+ * Model Predictive Control: Lingua Franca Implementation
+ * This file handles ONLY coordination: timing, ports, deadlines.
+ * The control math lives in mpc_solver.c / mpc_solver.h.
+ *
+ * To plug in a different controller:
+ *   1. Edit mpc_solver.c (implement your own mpc_solve function)
+ *   2. Recompile: lfc mpc.lf
+ *   3. Run: ./bin/mpc
+*/
+
+target C {
+    timeout: 5 sec,
+    files: ["mpc_solver.c", "mpc_solver.h"]
+}
+
+preamble {=
+    #include "mpc_solver.h"
+
+    // Struct for passing state vectors across LF ports
+    typedef struct {
+        double data[NX];
+    } state_t;
+=}
+
+/**
+ * Reference: generates the target setpoint.
+ * Steps from 0 → 1.0 at t=1s, then to 0.5 at t=3s.
+ */
+reactor Reference {
+    output x_ref: state_t
+
+    timer t1(1 sec)
+    timer t2(3 sec)
+
+    reaction(startup) -> x_ref {=
+        state_t ref = {{0.0, 0.0}};
+        lf_set(x_ref, ref);
+    =}
+
+    reaction(t1) -> x_ref {=
+        state_t ref = {{1.0, 0.0}};
+        lf_set(x_ref, ref);
+        printf("[ref    ] T=%lld ms | reference -> 1.0\n",
+               lf_time_logical_elapsed() / 1000000LL);
+    =}
+
+    reaction(t2) -> x_ref {=
+        state_t ref = {{0.5, 0.0}};
+        lf_set(x_ref, ref);
+        printf("[ref    ] T=%lld ms | reference -> 0.5\n",
+               lf_time_logical_elapsed() / 1000000LL);
+    =}
+}
+
+/**
+ * Plant: simulates the physical system.
+ * Combines sensor (timer-driven, publishes state every 1ms)
+ * and actuator (message-driven, updates physics when u arrives).
+ * Both reactions share plant_x: race-free, no mutex needed.
+ */
+reactor Plant {
+    input u: double
+    output x: state_t
+
+    state plant_x: double[] = {0.0, 0.0}
+    state tick: long = 0
+    timer t(0, 1 msec)
+
+    // SENSOR: publish state every tick
+    reaction(t) -> x {=
+        double noise = 0.0001 * sin((double)self->tick * 0.37);
+        state_t current_x;
+        current_x.data[0] = self->plant_x[0] + noise;
+        current_x.data[1] = self->plant_x[1] + noise * 0.5;
+
+        lf_set(x, current_x);
+        self->tick++;
+    =}
+
+    // ACTUATOR: step physics when control arrives
+    reaction(u) {=
+        double u_val = u->value;
+
+        // x(k+1) = A·x(k) + B·u(k)
+        double x_new_0 = 1.0 * self->plant_x[0] + 0.001 * self->plant_x[1] + 0.0000005 * u_val;
+        double x_new_1 = 0.0 * self->plant_x[0] + 1.0   * self->plant_x[1] + 0.001     * u_val;
+
+        self->plant_x[0] = x_new_0;
+        self->plant_x[1] = x_new_1;
+
+        if (self->tick % 500 == 0) {
+            printf("[actuate] T=%lld ms | tick=%4ld | pos=%.4f | vel=%.4f | u=%.4f\n",
+                   lf_time_logical_elapsed() / 1000000LL,
+                   self->tick, self->plant_x[0], self->plant_x[1], u_val);
+        }
+    =}
+}
+
+/**
+ * Optimizer: calls the user-provided mpc_solve() function.
+ * The control math is entirely in mpc_solver.c.
+ * This reactor only handles: reading ports, calling the solver,
+ * writing the output port, and the deadline safety net.
+ */
+reactor Optimizer {
+    input x_current: state_t
+    input x_ref_in: state_t
+    output u_apply: double
+
+    state current_ref: double[] = {0.0, 0.0}
+
+    // Store the latest reference whenever it arrives
+    reaction(x_ref_in) {=
+        self->current_ref[0] = x_ref_in->value.data[0];
+        self->current_ref[1] = x_ref_in->value.data[1];
+    =}
+
+    // Call the solver: must finish within 1 ms
+    reaction(x_current) -> u_apply {=
+        double x0[NX];
+        x0[0] = x_current->value.data[0];
+        x0[1] = x_current->value.data[1];
+
+        double xref[NX];
+        xref[0] = self->current_ref[0];
+        xref[1] = self->current_ref[1];
+
+        // The one line that calls user code
+        double u = mpc_solve(x0, xref);
+
+        lf_set(u_apply, u);
+    =} deadline(1 msec) {=
+        printf("[WARNING] T_logical=%lld ms | T_physical=%lld ms | "
+               "Optimizer missed 1ms deadline! Applying emergency brakes.\n",
+               lf_time_logical_elapsed() / 1000000LL,
+               lf_time_physical_elapsed() / 1000000LL);
+        lf_set(u_apply, 0.0);
+    =}
+}
+
+/**
+ * Main reactor: wires everything together.
+ * These three arrows are the architecture diagram.
+ */
+main reactor {
+    ref = new Reference()
+    plant = new Plant()
+    optimizer = new Optimizer()
+
+    ref.x_ref         -> optimizer.x_ref_in
+    plant.x           -> optimizer.x_current
+    optimizer.u_apply  -> plant.u
+}
