@@ -126,8 +126,8 @@ federated reactor {
     ...
 }
 ```
-![RTI run](diagrams-and-results/rti1.png)
-![RTI run](diagrams-and-results/rti2.png)
+![RTI run](mpc/diagrams-and-results/rti1.png)
+![RTI run](mpc/diagrams-and-results/rti2.png)
 
 ### 📊 Performance Results & Real-Time Safety
 The "Missed Deadline" Feature
@@ -252,7 +252,7 @@ sys     0m0.258s
 
 A **tag** is a `(time, microstep)` pair representing a logical instant. In our MPC, the Plant's `timer t(0, 1 msec)` creates a new tag every 1 ms, giving us 5,000 tags over the 5-second run.
 
-At each tag, the runtime processes all triggered reactions (the level 0→5 pipeline: sensor → reference → optimizer → actuator). For our small NX=2 problem, this takes roughly **0.2 µs per tick**.
+At each tag, the runtime processes all triggered reactions (the level 0→5 pipeline: sensor → reference → optimizer → actuator).
 
 After all reactions complete, the runtime calls `_lf_next_locked()`, which sleeps until the next tag is due, typically ~1 ms away. During that sleep, **zero user CPU is consumed**.
 
@@ -261,13 +261,13 @@ After all reactions complete, the runtime calls `_lf_next_locked()`, which sleep
 The call chain from "all reactions done" to "thread asleep" is:
 
 ```
-_lf_next_locked()                         // reactor_threaded.c - advance to next tag
+_lf_next_locked()                         // core/threaded/reactor_threaded.c: advance to next tag
   → get_next_event_tag(env)               // peek at event queue: next tag is 1 ms away
-  → wait_until(next_tag.time, &cond)      // reactor_threaded.c - sleep until physical time catches up
-    → lf_clock_cond_timedwait(cond, t)    // platform layer - OS-level timed wait
+  → wait_until(next_tag.time, &cond)      // reactor_threaded.c: sleep until physical time catches up
+    → lf_clock_cond_timedwait(cond, t)    // platform layer: OS-level timed wait
       → _lf_cond_timedwait(cond, t)       // lf_POSIX_threads_support.c
-        → pthread_cond_timedwait(...)     // POSIX - thread removed from CPU entirely
-          → futex(FUTEX_WAIT_BITSET)      // Linux kernel - hardware timer set, thread sleeps
+        → pthread_cond_timedwait(...)     // POSIX: thread removed from CPU entirely
+          → futex(FUTEX_WAIT_BITSET)      // Linux kernel: hardware timer set, thread sleeps
 ```
 
 ### The key function: `_lf_cond_timedwait`
@@ -288,22 +288,16 @@ int _lf_cond_timedwait(lf_cond_t* cond, instant_t wakeup_time) {
   // Translate OS error code to LF constant
   switch (return_value) {
   case ETIMEDOUT:
-    return_value = LF_TIMEOUT;  // "I slept the full time"
+    return_value = LF_TIMEOUT;  // slept the full time
     break;
   default:
-    break;                      // "I was woken early by a signal"
+    break;                      // woken up early by a signal
   }
   return return_value;
 }
 ```
 
-When `pthread_cond_timedwait` is called, the OS kernel:
-
-1. Releases the mutex (so other threads aren't blocked)
-2. Sets a hardware timer for the requested wakeup time
-3. **Removes the thread from the CPU's run queue entirely**
-
-The thread is now "sleeping." The CPU executes **zero instructions** for this thread. When the hardware timer fires (~1 ms later), the kernel puts the thread back on the run queue, and the program resumes.
+When the hardware timer fires (~1 ms later), the kernel puts the thread back on the run queue, and the program resumes.
 
 ### The caller: `wait_until()`
 
@@ -325,34 +319,20 @@ bool wait_until(instant_t wait_until_time, lf_cond_t* condition) {
 }
 ```
 
-## Per-tick CPU breakdown
-
-Each tick takes 1 ms = 1,000 µs of wall-clock time. Across 5,000 ticks:
-
-| | Per tick | Total (5,000 ticks) |
-|---|---|---|
-| Code running (MPC math, `lf_set`, etc.) | ~0.2 µs | 0.001 s (`user`) |
-| Kernel work (sleep/wake overhead) | ~118 µs | 0.592 s (`sys`) |
-| Truly asleep (zero CPU) | ~882 µs | ~4.4 s |
-| **Wall clock** | **1,000 µs** | **5.023 s** (`real`) |
-
-The `user` time is 0.001 s because the NX=2 MPC math is trivially small, roughly 0.2 µs per tick. The `sys` time (0.592 s) is the cumulative kernel overhead of 5,000 sleep/wake cycles. The remaining ~4.4 s is genuine sleep where zero CPU is consumed.
-
 ## Conclusion
 
 ```
 LF:  0.001 s user CPU  →  the process sleeps between tags, wakes only to compute
 C:   6.052 s user CPU  →  four threads burn a full core on lock contention
+```
 
 # How Reactors are Connected in Multicore (Main Reactor) Mode
 
-In `federated reactor` mode, reactors communicate through TCP sockets via a Runtime Infrastructure (RTI) that coordinates time advancement with network protocol messages (`MSG_TYPE_TIMESTAMP`, `MSG_TYPE_NEXT_EVENT_TAG`, `MSG_TYPE_TAG_ADVANCE_GRANT`). Each reactor runs as a separate OS process.
+All reactors live in a single process, share an address space, and are connected by three compile-time mechanisms:
 
-In `main reactor` mode — which is how `mpc.lf` is compiled — **there is no network, no RTI, no message passing.** All reactors live in a single process, share an address space, and are connected by three compile-time mechanisms:
-
-1. **Pointer aliasing** — ports are connected by making the input point to the output's memory (zero-copy data transfer)
-2. **Static trigger arrays** — each reaction knows its downstream triggers at compile time (zero-cost signaling)
-3. **Level-ordered scheduling** — reactions are dispatched by integer priority, with a worker thread pool (deterministic execution order)
+1. **Pointer aliasing:** ports are connected by making the input point to the output's memory (zero-copy data transfer)
+2. **Static trigger arrays:** each reaction knows its downstream triggers at compile time (zero-cost signaling)
+3. **Level-ordered scheduling:** reactions are dispatched by integer priority, with a worker thread pool (deterministic execution order)
 
 All three are set up once during initialization in the generated `mpc.c` file, inside `_lf_initialize_trigger_objects()`. Nothing is computed or negotiated at runtime.
 
