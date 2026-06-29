@@ -774,9 +774,9 @@ static bool _lf_worker_handle_violations(environment_t* env, int worker_number, 
  * @param worker_number The ID of the worker.
  * @param reaction The reaction to invoke.
  */
-static void _lf_worker_invoke_reaction(environment_t* env, int worker_number, reaction_t* reaction) {
-  LF_PRINT_LOG("Env %u: Worker %d: Invoking reaction %s at elapsed tag " PRINTF_TAG ".", env->id, worker_number,
-               reaction->name, env->current_tag.time - start_time, env->current_tag.microstep);
+static void _lf_worker_invoke_reactioInvoking reaction %s at elapsed tag " PRINTF_TAG ".", env->id, worker_number,
+               reaction->name, env->current_tagn(environment_t* env, int worker_number, reaction_t* reaction) {
+  LF_PRINT_LOG("Env %u: Worker %d: .time - start_time, env->current_tag.microstep);
   _lf_invoke_reaction(env, reaction, worker_number);
 
   // If the reaction produced outputs, put the resulting triggered
