@@ -28,17 +28,17 @@ The primary goal of this project is to eliminate the non-determinism, race condi
 **Source Code**
 * [`mpc-lf-main/mpc.lf`](mpc/mpc-code/mpc-lf-main/mpc.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
 * [`mpc-lf-federated/mpc_fed.lf`](mpc/mpc-code/mpc-lf-federated/mpc_fed.lf) - The deterministic Lingua Franca (LF) implementation of the MPC architecture (non-federated).
-* [`mpc_threaded.c`](mpc/mpc-code/mpc_threaded.c) — The original POSIX-threaded C baseline used for comparison.
+* [`mpc_threaded.c`](mpc/mpc-code/mpc_threaded.c) - The original POSIX-threaded C baseline used for comparison.
 
 **Benchmarking and Automation**
-* [`run_benchmark.py`](mpc/mpc-code/run_benchmark.py) — Python test harness that automates compilation, execution, output parsing, and graph generation.
+* [`run_benchmark.py`](mpc/mpc-code/run_benchmark.py) - Python test harness that automates compilation, execution, output parsing, and graph generation.
 
 **Assets and Diagrams**
-* [`diagrams-and-results/architecture.png`](mpc/diagrams-and-results/architecture.png) — Visual representation of the Lingua Franca reactor network and data flow.
+* [`diagrams-and-results/architecture.png`](mpc/diagrams-and-results/architecture.png) - Visual representation of the Lingua Franca reactor network and data flow.
 
 **Execution Results**
-* [`diagrams-and-results/lf_results.txt`](mpc/diagrams-and-results/lf_results.txt) — Raw execution log of the time-aware LF simulation.
-* [`diagrams-and-results/c_results.txt`](mpc/diagrams-and-results/c_results.txt) — Raw execution log of the standard C multithreaded simulation.
+* [`diagrams-and-results/lf_results.txt`](mpc/diagrams-and-results/lf_results.txt) - Raw execution log of the time-aware LF simulation.
+* [`diagrams-and-results/c_results.txt`](mpc/diagrams-and-results/c_results.txt) - Raw execution log of the standard C multithreaded simulation.
 
 ## System Architecture
 
