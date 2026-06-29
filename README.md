@@ -69,9 +69,10 @@ lfc mpc.lf
 time ./bin/mpc
 ```
 
-### Execution Results & Timing Analysis
+### Execution Results and Timing Analysis
 ![C vs. LF](mpc/diagrams-and-results/comparison.png)
 ![Logical timestamps in LF](mpc/diagrams-and-results/logical_timestamps_printed.png)
+
 When comparing the terminal output of the standard C baseline against the Lingua Franca implementation, we observe three critical architectural differences.
 
 **1. Mathematical Correctness (The Physics Match)**
