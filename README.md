@@ -1,4 +1,23 @@
 # Lingua Franca Benchmarks
+
+A collection of deterministic, real-time Cyber-Physical System (CPS) benchmarks implemented in [Lingua Franca (LF)](https://www.lf-lang.org/), with POSIX C baselines for comparison.
+
+## Table of Contents
+
+- [1. MPC (Model Predictive Control)](#1-mpc-model-predictive-control)
+  - [Project Files](#-project-files)
+  - [System Architecture](#system-architecture)
+  - [Quick Start and Benchmarking](#quick-start-and-benchmarking)
+  - [Execution Results & Timing Analysis](#execution-results--timing-analysis)
+  - [Distributed Execution (RTI)](#-distributed-execution-rti)
+  - [Performance Results & Real-Time Safety](#-performance-results--real-time-safety)
+  - [Architectural Coding Standards](#architectural-coding-standards-enforced)
+  - [Deep Dive: Why is User CPU So Low?](#why-is-user-cpu-so-low-0001-s)
+  - [Deep Dive: How Reactors are Connected in Multicore](#how-reactors-are-connected-in-multicore-main-reactor)
+  - [Deep Dive: How Logical Time Works](#how-logical-time-works-in-lingua-franca)
+- [2. (Future Benchmark)](#)
+- [3. (Future Benchmark)](#)
+
 ## 1. MPC (Model Predictive Control)
 This is a deterministic, real-time Cyber-Physical System (CPS) benchmark for robotics. It demonstrates the translation of a multi-threaded Model Predictive Control (MPC) architecture from standard POSIX C threads into [Lingua Franca (LF)](https://www.lf-lang.org/).
 
@@ -85,49 +104,65 @@ The C thread lagged and missed the 1ms hardware deadline, but silently ignored i
 Lingua Franca measures physical time against its logical timeline. When the heavy gradient descent math exceeded the strict 1ms hardware deadline due to OS jitter, LF intercepted the failure, aborted the stale math, and triggered the deadline(1 msec) block to safely apply u=0.0 (emergency braking).
 
 ## 🌐 Distributed Execution (RTI)
+
 ![RTI diagram](mpc/diagrams-and-results/RTI_diagram.png)
 
-This benchmark can be compiled as a distributed network system using Lingua Franca's Run-Time Infrastructure (RTI). By changing the root component to a `federated reactor`, the compiler automatically generates a network server and splits the application into standalone executables (`mpc_plant`, `mpc_optimizer`, `mpc_ref`). 
+This benchmark can be compiled as a distributed network system using Lingua Franca's Run-Time Infrastructure (RTI). By changing the root component to a `federated reactor`, the compiler automatically generates a network server and splits the application into standalone executables (`mpc_plant`, `mpc_optimizer`, `mpc_ref`).
 
 The RTI acts as a central time-keeper, utilizing clock-synchronization protocols to coordinate logical time across physical TCP/IP network bounds, demonstrating how Lingua Franca scales seamlessly from multi-core threads to multi-node distributed systems.
 
-RTI (Run-Time Infrastrtucture) is a central software bus that allows different programs, running on different computers, to talk to each other and share a single unified timeline. It handles the networking, the message routing, and most importantly, the synchronization of time across physical boundaries.
+### What is the RTI?
+
+The RTI (Run-Time Infrastructure) is a central software bus that allows different programs, running on different computers, to talk to each other and share a single unified timeline. It handles the networking, the message routing, and most importantly, the synchronization of time across physical boundaries.
 
 In standard C, if you want a robot's brain to run on a laptop and its spinal cord to run on a chassis, you have to manually write thousands of lines of TCP/IP socket code and deal with network lag causing the robot to crash.
 
-In Lingua Franca, the RTI is an automatically generated Time Conductor.
-When you compile a distributed program, LF builds a dedicated server (the RTI) whose sole job is to force every machine on the network to obey strict Logical Time. Before any node is allowed to execute tick 1500, the RTI ensures that all network messages from tick 1499 have been delivered, and that everyone's physical clocks are perfectly synchronized. It provides deterministic, real-time safety guarantees over an unpredictable Wi-Fi/Ethernet network.
+In Lingua Franca, the RTI is an automatically generated **Time Conductor**. When you compile a distributed program, LF builds a dedicated server (the RTI) whose sole job is to force every machine on the network to obey strict Logical Time. Before any node is allowed to execute tick 1500, the RTI ensures that all network messages from tick 1499 have been delivered, and that everyone's physical clocks are perfectly synchronized. It provides deterministic, real-time safety guarantees over an unpredictable Wi-Fi/Ethernet network.
 
-How We Implemented It (The Architecture)
+### How We Implemented It
 
-We changed main reactor to federated reactor.
+We changed `main reactor` to `federated reactor`:
+
+```lf
+federated reactor {
+    ref = new Reference()
+    plant = new Plant()
+    optimizer = new Optimizer()
+
+    ref.x_ref         -> optimizer.x_ref_in
+    plant.x           -> optimizer.x_current
+    optimizer.u_apply  -> plant.u
+}
+```
 
 By doing this, the Lingua Franca compiler completely changed its output. Instead of building one executable, it built four independent network binaries:
 
-RTI (The central time-keeper)
+| Binary | Role |
+|---|---|
+| `RTI` | The central time-keeper |
+| `mpc_ref` | The Remote Control (reference setpoint) |
+| `mpc_optimizer` | The Brain (gradient descent MPC solver) |
+| `mpc_plant` | The Robot Chassis (sensor readings + actuator commands) |
 
-mpc_ref (The Remote Control)
+Because everything ran on a single machine for the benchmark, Lingua Franca intelligently bundled these into a single launcher (`./bin/mpc`) that spun up the RTI server in the background and connected the three federates via local TCP/IP sockets.
 
-mpc_optimizer (The Brain performing gradient descent)
+### The Execution Lifecycle
 
-mpc_plant (The Robot Chassis reading sensors and applying voltage)
+**Phase 1: Clock Synchronization (Google Spanner Protocol)**
 
-Because everything ran on my single machine for the benchmark, Lingua Franca intelligently bundled these into a single magic launcher (./bin/mpc) that spun up the RTI server in the background and connected the three federates via local TCP/IP sockets.
+The RTI boots up first and waits. As `plant`, `optimizer`, and `ref` connect to the network, the RTI refuses to let the simulation start. It first forces them to exchange dozens of ping messages to measure the network latency between them. It then locks their internal clocks together. All three federates reported the exact same starting nanosecond (`1780087519273407295`).
 
-How It Works (The Execution Lifecycle)
+**Phase 2: Latency Catch**
 
-Phase 1: The Clock Sync (Google Spanner Protocol): The RTI boots up first and waits. As plant, optimizer, and ref connect to the network, the RTI refuses to let the simulation start. It first forces them to exchange dozens of ping messages to measure the network latency between them. It then locks their internal clocks together. You saw this when all three federates reported the exact same starting nanosecond (1780087519273407295).
+Once execution begins, data must flow through network sockets. Initially, routing the heavy matrix math from the Optimizer to the Plant took slightly longer than the strict 1 ms hardware deadline. Lingua Franca detected this network lag immediately. Instead of using stale, delayed packets, the Plant caught the violation and safely applied the emergency brakes (`u = 0.0`).
 
-Phase 2: The "Cold Start" Latency Catch: Once execution begins, data must flow through network sockets. Initially, routing the heavy matrix math from the Optimizer to the Plant took slightly longer than the strict 1-millisecond hardware deadline. Lingua Franca detected this network lag immediately. Instead of using stale, delayed packets, the Plant caught the violation and safely applied the emergency brakes (u=-0.0000).
+**Phase 3: Lock-Step Execution**
 
-Phase 3: Flawless Lock-Step Execution: Once the network sockets warmed up, the RTI coordinated the distributed system flawlessly. Over a 5.000-second logical simulation, the total physical execution time was 5.002 seconds. The RTI managed all the TCP/IP network overhead in just 2 milliseconds.
-```
-federated reactor {
-    ...
-}
-```
-![RTI run](mpc/diagrams-and-results/rti1.png)
-![RTI run](mpc/diagrams-and-results/rti2.png)
+Once the network sockets warmed up, the RTI coordinated the distributed system flawlessly. Over a 5.000-second logical simulation, the total physical execution time was 5.002 seconds. The RTI managed all the TCP/IP network overhead in just 2 milliseconds.
+
+![RTI startup and clock synchronization](mpc/diagrams-and-results/rti1.png)
+![RTI execution and shutdown](mpc/diagrams-and-results/rti2.png)
+
 
 ### 📊 Performance Results & Real-Time Safety
 The "Missed Deadline" Feature
@@ -431,7 +466,7 @@ static void _lf_worker_invoke_reaction(env, worker_number, reaction) {
 }
 ```
 
-`schedule_output_reactions()` (in `reactor_common.c`) does:
+`schedule_output_reactions()` (in `core/reactor_common.c`) does:
 
 ```
 for each output port of this reaction:
@@ -488,14 +523,14 @@ size_t num_reactions_per_level[6] = {2, 1, 1, 1, 1, 1};
 ```
 
 This single array is the entire compiled schedule:
-- **Level 0** has **2** reactions (Reference startup + Plant sensor) — these can run on separate worker threads in **parallel**
-- **Levels 1–5** each have **1** reaction — strictly sequential
+- **Level 0** has **2** reactions (Reference startup + Plant sensor): these can run on separate worker threads in **parallel**
+- **Levels 1–5** each have **1** reaction: strictly sequential
 
 ### Debug output proof
 
 ```
 Worker 0 popping reaction with level 0     ← plant sensor
-Worker 1 popping reaction with level 0     ← ref startup (PARALLEL — different worker!)
+Worker 1 popping reaction with level 0     ← ref startup (PARALLEL: different worker)
 ...
 Worker 0 popping reaction with level 3     ← optimizer ref handler
 Worker 0 popping reaction with level 4     ← optimizer MPC
@@ -504,7 +539,7 @@ Worker 0 popping reaction with level 5     ← plant actuator
 
 ---
 
-## Putting It All Together — One Tick
+## Putting It All Together: One Tick
 
 Here is the complete pipeline for a single 1 ms tick at tag `(T, 0)`:
 
@@ -555,12 +590,12 @@ Timer fires at tag (T, 0)
 | | Main Reactor (multicore) | Federated Reactor |
 |---|---|---|
 | **Process model** | Single binary, shared address space, worker thread pool | Separate binary per reactor, separate address spaces |
-| **Data transfer** | Pointer alias — zero-copy, same memory | Serialize → TCP socket → RTI routes → TCP → deserialize |
+| **Data transfer** | Pointer alias: zero-copy, same memory | Serialize → TCP socket → RTI routes → TCP → deserialize |
 | **Signaling** | `schedule_output_reactions()` walks a static C array in-process | `MSG_TYPE_TAGGED_MESSAGE` sent over network |
 | **Time coordination** | Single scheduler advances all reactors via `_lf_next_locked()` | RTI exchanges `NET` / `TAG` messages to grant time advancement |
 | **Overhead per message** | One pointer dereference + array walk | Network round-trip + serialization/deserialization |
 
-The `mpc.lf` source code is **identical** in both modes. The three `->` connection lines mean the same thing semantically — the compiler decides whether they become pointer casts (main reactor) or network channels (federated reactor) based on the top-level reactor declaration.
+The `mpc.lf` source code is **identical** in both modes. The three `->` connection lines mean the same thing semantically: the compiler decides whether they become pointer casts (main reactor) or network channels (federated reactor) based on the top-level reactor declaration.
 
 ---
 
@@ -568,11 +603,215 @@ The `mpc.lf` source code is **identical** in both modes. The three `->` connecti
 
 | Evidence | Location |
 |---|---|
-| Port pointer aliasing | `mpc.c` — search `// Connect inputs and outputs` |
-| Trigger array wiring | `mpc.c` — search `// Point to destination port` |
-| `output_produced` flags | `mpc.c` — search `output_produced[count++]` |
-| Level assignments | `mpc.c` — search `lf_combine_deadline_and_level` |
-| Scheduler array | `mpc.c` — search `num_reactions_per_level` |
-| Worker invoke + cascade | `reactor_threaded.c` — `_lf_worker_invoke_reaction()` |
-| Sleep between tags | `reactor_threaded.c` — `_lf_next_locked()` → `wait_until()` |
-| OS-level sleep | `lf_POSIX_threads_support.c` — `_lf_cond_timedwait()` |
+| Port pointer aliasing | `mpc.c`: search `// Connect inputs and outputs` |
+| Trigger array wiring | `mpc.c`: search `// Point to destination port` |
+| `output_produced` flags | `mpc.c`: search `output_produced[count++]` |
+| Level assignments | `mpc.c`: search `lf_combine_deadline_and_level` |
+| Scheduler array | `mpc.c`: search `num_reactions_per_level` |
+| Worker invoke + cascade | `reactor_threaded.c`: `_lf_worker_invoke_reaction()` |
+| Sleep between tags | `reactor_threaded.c`: `_lf_next_locked()` → `wait_until()` |
+| OS-level sleep | `lf_POSIX_threads_support.c`: `_lf_cond_timedwait()` |
+
+# How Logical Time Works in Lingua Franca
+
+Logical time in Lingua Franca is is a **variable that jumps forward from event to event.** The runtime reads the next event's timestamp from a priority queue and sets the current tag to that value. Between events, logical time does not advance: the thread sleeps.
+
+## The Variable That Holds Logical Time
+
+Every environment has one field that stores the current logical time:
+
+```c
+env->current_tag    // struct: { .time = nanoseconds, .microstep = int }
+```
+
+A **tag** is a `(time, microstep)` pair. The `time` component is an absolute timestamp in nanoseconds. The `microstep` handles logically simultaneous events: if two things happen at the same physical time, they get microsteps 0, 1, 2, etc.
+
+For our MPC running at 1 kHz for 5 seconds, the tags are:
+
+```
+(0, 0)          ← startup
+(1000000, 0)    ← 1 ms
+(2000000, 0)    ← 2 ms
+(3000000, 0)    ← 3 ms
+...
+(5000000000, 0) ← 5 seconds (stop tag)
+```
+
+There is no intermediate logical time between tags: no 0.5 ms, no 1.5 ms. Logical time jumps directly from one event to the next.
+
+## How Logical Time Advances
+
+The advancement happens inside `_lf_next_locked()` in `reactor_threaded.c`, in three steps:
+
+### Step 1: Peek at the event queue
+
+```c
+tag_t next_tag = get_next_event_tag(env);
+```
+
+The event queue is a **priority queue sorted by tag.** `get_next_event_tag()` peeks at the earliest event without removing it. For our MPC, this returns the next timer tick (e.g., `{.time = start_time + 3000000, .microstep = 0}` for the 3 ms tag).
+
+### Step 2: Sleep until physical time catches up
+
+```c
+// Inside the while(true) loop in _lf_next_locked():
+if (wait_until(next_tag.time, &env->event_q_changed)) {
+    break;  // slept the full time: ready to advance
+}
+```
+
+`wait_until()` calls `lf_clock_cond_timedwait()`, which calls `pthread_cond_timedwait()`, which puts the thread to sleep until either the target time is reached or the condition variable is signaled. During this sleep, zero user CPU is consumed.
+
+### Step 3: Jump logical time forward
+
+```c
+_lf_advance_tag(env, next_tag);
+// This does: env->current_tag = next_tag
+```
+
+Logical time is now at the new tag. It didn't increment through intermediate values, it jumped directly. If the previous tag was `(2000000, 0)` and the next event is at `(3000000, 0)`, logical time jumps from 2 ms to 3 ms in one assignment.
+
+### After advancing: pop events and run reactions
+
+```c
+_lf_start_time_step(env);     // reset ports from previous tag
+_lf_pop_events(env);          // pull events at this tag, enqueue triggered reactions
+```
+
+`_lf_pop_events()` removes all events with the current tag from the event queue and enqueues their triggered reactions into the scheduler's reaction queue, sorted by level. Workers then pick up and execute those reactions.
+
+## Where Events Come From
+
+Events enter the priority queue in two ways:
+
+### 1. Timers: periodic events
+
+In the generated `mpc.c`, the Plant's timer is registered at initialization:
+
+```c
+mpc_plant_self[0]->_lf__t.offset = 0;        // first fire at time 0
+mpc_plant_self[0]->_lf__t.period = MSEC(1);   // then every 1 ms
+```
+
+When a timer fires at tag `(T, 0)`, the runtime inserts the **next** firing into the event queue at tag `(T + period, 0)`. The debug output shows this:
+
+```
+Inserting event in the event queue with elapsed tag (2000000, 0).
+```
+
+That's the 1 ms timer saying "fire me again at 2 ms." This creates the chain of events that drives the entire MPC loop.
+
+Similarly, the Reference reactor's one-shot timers are registered:
+
+```c
+mpc_ref_self[0]->_lf__t1.offset = SEC(1);   // fire once at t = 1 second
+mpc_ref_self[0]->_lf__t1.period = 0;         // period = 0 → one-shot, no repeat
+
+mpc_ref_self[0]->_lf__t2.offset = SEC(3);   // fire once at t = 3 seconds
+mpc_ref_self[0]->_lf__t2.period = 0;
+```
+
+### 2. Reactions that call `lf_set`: cascades within the same tag
+
+When a reaction calls `lf_set()` on an output port, the downstream reactions are enqueued at the **current** tag, logical time does not advance. The cascade happens within the same logical instant:
+
+```
+Tag (1000000, 0):
+    Plant sensor runs          → lf_set(x, ...)      → enqueues Optimizer L4
+    Optimizer runs             → lf_set(u_apply, ...) → enqueues Plant actuator L5
+    Plant actuator runs        → updates state, no output
+    
+    All at the SAME logical time: 1 ms
+```
+
+## Event Queue State During Execution
+
+At startup, the event queue contains:
+
+```
+(0, 0)            ← Plant timer (period=1ms) + startup events
+(1000000000, 0)   ← Reference t1 (fires once at 1 second)
+(3000000000, 0)   ← Reference t2 (fires once at 3 seconds)
+```
+
+After processing tag `(0, 0)`, the Plant timer inserts its next firing:
+
+```
+(1000000, 0)      ← Plant timer next tick (1 ms)
+(1000000000, 0)   ← Reference t1 (still waiting)
+(3000000000, 0)   ← Reference t2 (still waiting)
+```
+
+After processing tag `(1000000, 0)`:
+
+```
+(2000000, 0)      ← Plant timer next tick (2 ms)
+(1000000000, 0)   ← Reference t1
+(3000000000, 0)   ← Reference t2
+```
+
+This pattern continues: each tick pops one timer event and inserts the next one. The Reference timers sit in the queue until their time comes.
+
+## Logical Time vs. Physical Time
+
+| | Logical time | Physical time |
+|---|---|---|
+| **What it is** | A variable: `env->current_tag` | The hardware clock: `clock_gettime()` |
+| **How it advances** | Jumps from event to event | Flows continuously |
+| **Who controls it** | The event queue | Physics (the real world) |
+| **Read via** | `lf_time_logical_elapsed()` | `lf_time_physical_elapsed()` |
+
+The deadline mechanism connects the two: if physical time exceeds logical time + deadline, the violation handler fires. This is checked in `_lf_worker_handle_deadline_violation_for_reaction()`:
+
+```c
+if (reaction->deadline >= 0LL) {
+    instant_t physical_time = lf_time_physical();
+    if (physical_time > lf_time_add(env->current_tag.time, reaction->deadline)) {
+        // Deadline violation: invoke handler (emergency brake)
+    }
+}
+```
+
+## Conclusion
+
+Logical time **jumps** from event to event. If a program had no events between 1 ms and 500 ms, logical time would jump directly from 1 ms to 500 ms in one step, and `wait_until()` would sleep for 499 ms. The event queue drives everything. No events means no time advancement.
+
+This is why `lf_time_logical_elapsed()` works in print statements: it just reads `env->current_tag.time - start_time` and returns the difference. It's reading a variable, not measuring a clock.
+
+## The Complete Cycle: One Tick
+
+```
+env->current_tag = (T, 0)           ← logical time is at T
+
+_lf_pop_events()                    ← pull events at tag (T, 0)
+  └── enqueues triggered reactions
+
+Workers execute reactions:
+  L0: Plant sensor → lf_set(x)     ← cascade: enqueue L4
+  L4: Optimizer MPC → lf_set(u)    ← cascade: enqueue L5
+  L5: Plant actuator               ← end of chain
+
+_lf_next_locked():
+  next_tag = get_next_event_tag()   ← peek: (T + 1ms, 0)
+  wait_until(next_tag.time)         ← sleep until physical time reaches T + 1ms
+  _lf_advance_tag(env, next_tag)    ← env->current_tag = (T + 1ms, 0)
+
+env->current_tag = (T + 1ms, 0)    ← logical time jumped forward
+
+...repeat 5,000 times...
+```
+
+## Source File Reference
+
+| Concept | Location |
+|---|---|
+| Current tag variable | `env->current_tag` (defined in `environment.h`) |
+| Tag advancement | `_lf_advance_tag()` called in `_lf_next_locked()` (`reactor_threaded.c`) |
+| Event queue peek | `get_next_event_tag()` (`reactor_threaded.c`) |
+| Event popping | `_lf_pop_events()` (`reactor_common.c`) |
+| Sleep between tags | `wait_until()` → `lf_clock_cond_timedwait()` → `_lf_cond_timedwait()` |
+| Timer registration | `mpc.c`:`_lf__t.offset` and `_lf__t.period` fields |
+| Timer rescheduling | `lf_schedule_trigger()` called after timer fires |
+| Deadline check | `_lf_worker_handle_deadline_violation_for_reaction()` (`reactor_threaded.c`) |
+| Read logical time | `lf_time_logical_elapsed()` → reads `env->current_tag.time - start_time` (mpc/core/reactor_common.c)|
+| Read physical time | `lf_time_physical()` → calls `clock_gettime(CLOCK_MONOTONIC)` (mpc/low_level_platform/impl/src/lf_windows_support.c)|
