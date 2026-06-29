@@ -1,5 +1,5 @@
 core/CMakeFiles/reactor-c.dir/utils/vector.c.o: \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/utils/vector.c \
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/utils/vector.c \
  /usr/include/stdc-predef.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
@@ -44,4 +44,4 @@ core/CMakeFiles/reactor-c.dir/utils/vector.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/assert.h \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/vector.h
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/vector.h

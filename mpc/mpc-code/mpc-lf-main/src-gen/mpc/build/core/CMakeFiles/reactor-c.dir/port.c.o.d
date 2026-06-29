@@ -1,5 +1,5 @@
 core/CMakeFiles/reactor-c.dir/port.c.o: \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/port.c \
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/port.c \
  /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
@@ -27,7 +27,7 @@ core/CMakeFiles/reactor-c.dir/port.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdio2-decl.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/stdio2.h \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/port.h \
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/port.h \
  /usr/include/stdlib.h /usr/include/x86_64-linux-gnu/bits/waitflags.h \
  /usr/include/x86_64-linux-gnu/bits/waitstatus.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
@@ -58,5 +58,5 @@ core/CMakeFiles/reactor-c.dir/port.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdbool.h \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/lf_token.h \
- /mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/vector.h
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/lf_token.h \
+ /home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/core/../include/core/utils/vector.h

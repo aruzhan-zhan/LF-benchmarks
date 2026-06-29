@@ -1,8 +1,8 @@
 #ifndef _PLANT_H
 #define _PLANT_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_1732513254_H
-#define TOP_LEVEL_PREAMBLE_1732513254_H
+#ifndef TOP_LEVEL_PREAMBLE_1486954672_H
+#define TOP_LEVEL_PREAMBLE_1486954672_H
 #include <math.h>
 #include <string.h>
 
@@ -69,7 +69,7 @@ static double compute_cost(const double x0[NX], const double xref[NX], const dou
 
     return cost;
 }
-#endif // TOP_LEVEL_PREAMBLE_1732513254_H
+#endif // TOP_LEVEL_PREAMBLE_1486954672_H
 typedef struct {
     token_type_t type;
     lf_token_t* token;
@@ -100,12 +100,12 @@ typedef struct {
 } _plant_x_t;
 typedef struct {
     struct self_base_t base;
-#line 104 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.h"
-    #line 106 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+#line 104 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.h"
+    #line 106 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     double* plant_x;
-    #line 107 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 107 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     long tick;
-#line 109 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.h"
+#line 109 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.h"
     _plant_u_t* _lf_u;
     // width of -2 indicates that it is not a multiport.
     int _lf_u_width;

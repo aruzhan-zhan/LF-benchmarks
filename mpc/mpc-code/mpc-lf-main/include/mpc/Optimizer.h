@@ -1,9 +1,9 @@
 #ifndef _optimizer_H
 #define _optimizer_H
 #ifndef _OPTIMIZER_H // necessary for arduino-cli, which automatically includes headers that are not used
-#ifndef TOP_LEVEL_PREAMBLE_1732513254_H
-#define TOP_LEVEL_PREAMBLE_1732513254_H
-/*Correspondence: Range: [(5, 4), (70, 1)) -> Range: [(0, 0), (65, 1)) (verbatim=true; src=/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf)*/#include <math.h>
+#ifndef TOP_LEVEL_PREAMBLE_1486954672_H
+#define TOP_LEVEL_PREAMBLE_1486954672_H
+/*Correspondence: Range: [(5, 4), (70, 1)) -> Range: [(0, 0), (65, 1)) (verbatim=true; src=/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf)*/#include <math.h>
 #include <string.h>
 
 // MPC parameters
@@ -69,7 +69,7 @@ static double compute_cost(const double x0[NX], const double xref[NX], const dou
 
     return cost;
 }
-#endif // TOP_LEVEL_PREAMBLE_1732513254_H
+#endif // TOP_LEVEL_PREAMBLE_1486954672_H
 #ifdef __cplusplus
 extern "C" {
 #endif

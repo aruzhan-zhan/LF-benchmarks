@@ -4,8 +4,8 @@
 #include "_reference.h"
 #include "_optimizer.h"
 #include "_plant.h"
-#ifndef TOP_LEVEL_PREAMBLE_1732513254_H
-#define TOP_LEVEL_PREAMBLE_1732513254_H
+#ifndef TOP_LEVEL_PREAMBLE_1486954672_H
+#define TOP_LEVEL_PREAMBLE_1486954672_H
 #include <math.h>
 #include <string.h>
 
@@ -72,14 +72,14 @@ static double compute_cost(const double x0[NX], const double xref[NX], const dou
 
     return cost;
 }
-#endif // TOP_LEVEL_PREAMBLE_1732513254_H
+#endif // TOP_LEVEL_PREAMBLE_1486954672_H
 
 
 
 typedef struct {
     struct self_base_t base;
-#line 82 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.h"
-#line 83 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.h"
+#line 82 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.h"
+#line 83 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_mpc_main.h"
 } _mpc_main_main_self_t;
 _mpc_main_main_self_t* new__mpc_main();
 #endif // _MPC_MAIN_H

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/platform/impl/platform.c" "core/CMakeFiles/lf-platform-impl.dir/__/platform/impl/platform.c.o" "gcc" "core/CMakeFiles/lf-platform-impl.dir/__/platform/impl/platform.c.o.d"
+  "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/platform/impl/platform.c" "core/CMakeFiles/lf-platform-impl.dir/__/platform/impl/platform.c.o" "gcc" "core/CMakeFiles/lf-platform-impl.dir/__/platform/impl/platform.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,8 +1,8 @@
 #ifndef _REFERENCE_H
 #define _REFERENCE_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_1732513254_H
-#define TOP_LEVEL_PREAMBLE_1732513254_H
+#ifndef TOP_LEVEL_PREAMBLE_1486954672_H
+#define TOP_LEVEL_PREAMBLE_1486954672_H
 #include <math.h>
 #include <string.h>
 
@@ -69,7 +69,7 @@ static double compute_cost(const double x0[NX], const double xref[NX], const dou
 
     return cost;
 }
-#endif // TOP_LEVEL_PREAMBLE_1732513254_H
+#endif // TOP_LEVEL_PREAMBLE_1486954672_H
 typedef struct {
     token_type_t type;
     lf_token_t* token;
@@ -86,8 +86,8 @@ typedef struct {
 } _reference_x_ref_t;
 typedef struct {
     struct self_base_t base;
-#line 90 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.h"
-#line 91 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.h"
+#line 90 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.h"
+#line 91 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_reference.h"
     _reference_x_ref_t _lf_x_ref;
     int _lf_x_ref_width;
     reaction_t _lf__reaction_0;

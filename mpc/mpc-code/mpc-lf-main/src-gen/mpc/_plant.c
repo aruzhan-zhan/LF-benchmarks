@@ -9,7 +9,7 @@
 void _plantreaction_function_0(void* instance_args) {
     _plant_self_t* self = (_plant_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _plant_x_t* x = &self->_lf_x;
-    #line 112 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 112 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     double noise = 0.0001 * sin((double)self->tick*0.37);
     state_t current_x;
     current_x.data[0] = self->plant_x[0] + noise;
@@ -17,7 +17,7 @@ void _plantreaction_function_0(void* instance_args) {
     
     lf_set(x, current_x);
     self->tick++;
-#line 21 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
+#line 21 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
 }
 #include "include/api/reaction_macros_undef.h"
 #include "include/api/reaction_macros.h"
@@ -25,7 +25,7 @@ void _plantreaction_function_1(void* instance_args) {
     _plant_self_t* self = (_plant_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _plant_u_t* u = self->_lf_u;
     int u_width = self->_lf_u_width; SUPPRESS_UNUSED_WARNING(u_width);
-    #line 123 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 123 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
      double u_val = u->value;
      double x_new[NX];
     
@@ -41,7 +41,7 @@ void _plantreaction_function_1(void* instance_args) {
     lf_time_logical_elapsed() / 1000000LL,
     self->tick, self->plant_x[0], self->plant_x[1], u_val);
      }
-#line 45 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
+#line 45 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_plant.c"
 }
 #include "include/api/reaction_macros_undef.h"
 _plant_self_t* new__plant() {

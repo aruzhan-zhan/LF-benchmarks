@@ -1,1 +1,1 @@
-/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/bin/mpc
+/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/bin/mpc

@@ -10,10 +10,10 @@ void _optimizerreaction_function_0(void* instance_args) {
     _optimizer_self_t* self = (_optimizer_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _optimizer_x_ref_in_t* x_ref_in = self->_lf_x_ref_in;
     int x_ref_in_width = self->_lf_x_ref_in_width; SUPPRESS_UNUSED_WARNING(x_ref_in_width);
-    #line 151 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 151 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     self->current_ref[0] = x_ref_in->value.data[0];
     self->current_ref[1] = x_ref_in->value.data[1];
-#line 17 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
+#line 17 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
 }
 #include "include/api/reaction_macros_undef.h"
 #include "include/api/reaction_macros.h"
@@ -22,7 +22,7 @@ void _optimizerreaction_function_1(void* instance_args) {
     _optimizer_x_current_t* x_current = self->_lf_x_current;
     int x_current_width = self->_lf_x_current_width; SUPPRESS_UNUSED_WARNING(x_current_width);
     _optimizer_u_apply_t* u_apply = &self->_lf_u_apply;
-    #line 157 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 157 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
     // 1. read sensor and goal
     double x0[NX];
     x0[0] = x_current->value.data[0];
@@ -66,21 +66,21 @@ void _optimizerreaction_function_1(void* instance_args) {
         memcpy(u_seq[k], u_seq[k+1], NU * sizeof(double));
     }
     memset(u_seq[HORIZON-1], 0, NU * sizeof(double));
-#line 70 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
+#line 70 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
 }
 void _optimizer_deadline_function1(void* instance_args) {
     _optimizer_self_t* self = (_optimizer_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     _optimizer_x_current_t* x_current = self->_lf_x_current;
     int x_current_width = self->_lf_x_current_width; SUPPRESS_UNUSED_WARNING(x_current_width);
     _optimizer_u_apply_t* u_apply = &self->_lf_u_apply;
-    #line 201 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
+    #line 201 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/mpc.lf"
      // 5. Hardware safety net
      printf("[WARNING] T_logical=%lld ms | T_physical=%lld ms | "
     "Optimizer missed 1ms deadline! Applying emergency brakes.\n",
     lf_time_logical_elapsed() / 1000000LL,
     lf_time_physical_elapsed() / 1000000LL);
      lf_set(u_apply, 0.0);
-#line 84 "/mnt/c/Users/Aida/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
+#line 84 "/home/aruzhanmassalina/REPOS/LF-benchmarks/mpc/mpc-code/mpc-lf-main/src-gen/mpc/_optimizer.c"
 }
 #include "include/api/reaction_macros_undef.h"
 _optimizer_self_t* new__optimizer() {
