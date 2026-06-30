@@ -65,6 +65,7 @@ python3 run_benchmark.py
 To manually compile and run the LF architecture with physical time enforcement:
 
 ```bash
+rm -rf src-gen bin
 lfc mpc.lf
 time ./bin/mpc
 ```
