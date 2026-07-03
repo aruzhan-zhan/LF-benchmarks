@@ -494,6 +494,64 @@ Worker 0: Invoking reaction mpc.plant reaction 0        ← sensor runs, calls l
 
 Each reaction is assigned a topological level at compile time. The scheduler processes all reactions at level N before any at level N+1.
 
+```c
+  /**
+   * Analyze the dependencies between reactions and assign each reaction instance a level. This
+   * method removes nodes from this graph as it assigns levels. Any remaining nodes are part of
+   * causality cycles.
+   *
+   * <p>This procedure is based on Kahn's algorithm for topological sorting. Rather than
+   * establishing a total order, we establish a partial order. In this order, the level of each
+   * reaction is the least upper bound of the levels of the reactions it depends on.
+   */
+  private void assignLevels() {
+    List<ReactionInstance.Runtime> start = new ArrayList<>(rootNodes());
+
+    // All root nodes start with level 0.
+    for (Runtime origin : start) {
+      origin.level = 0;
+    }
+
+    // No need to do any of this if there are no root nodes;
+    // the graph must be cyclic.
+    while (!start.isEmpty()) {
+      Runtime origin = start.remove(0);
+      Set<Runtime> toRemove = new LinkedHashSet<>();
+      Set<Runtime> downstreamAdjacentNodes = getDownstreamAdjacentNodes(origin);
+
+      // Visit effect nodes.
+      for (Runtime effect : downstreamAdjacentNodes) {
+        // Stage edge between origin and effect for removal.
+        toRemove.add(effect);
+
+        // Update level of downstream node.
+        if (effect.level <= origin.level) {
+          effect.level = origin.level + 1;
+        }
+      }
+      // Remove visited edges.
+      for (Runtime effect : toRemove) {
+        removeEdge(effect, origin);
+        // If the effect node has no more incoming edges,
+        // then move it in the start set.
+        if (getUpstreamAdjacentNodes(effect).isEmpty()) {
+          start.add(effect);
+        }
+      }
+
+      // Remove visited origin.
+      removeNode(origin);
+      assignPortLevel(origin);
+
+      // Update the number of reactions per level for the enclave that contains the origin reaction.
+      ReactionInstance reaction = origin.getReaction();
+      ReactorInstance enclaveTop = reaction.getContainingEnclaveReactor();
+      // Update numReactionsPerLevel info
+      adjustNumReactionsPerLevel(origin.level, enclaveTop);
+    }
+  }
+```
+
 ### Level assignments in `mpc.c`
 
 ```c
