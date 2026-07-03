@@ -493,7 +493,8 @@ Worker 0: Invoking reaction mpc.plant reaction 0        ← sensor runs, calls l
 ## Mechanism 3: Level order
 
 Each reaction is assigned a topological level at compile time. The scheduler processes all reactions at level N before any at level N+1.
-
+From https://github.com/lf-lang/lingua-franca
+core/src/main/java/org/lflang/generator/ReactionInstanceGraph.java
 ```c
   /**
    * Analyze the dependencies between reactions and assign each reaction instance a level. This
