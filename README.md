@@ -15,7 +15,7 @@ A collection of deterministic, real-time Cyber-Physical System (CPS) benchmarks 
   - [Why is User CPU So Low?](#why-is-user-cpu-so-low-0001-s)
   - [How Reactors are Connected in Multicore](#how-reactors-are-connected-in-multicore-main-reactor)
   - [How Logical Time Works](#how-logical-time-works-in-lingua-franca)
-- [2. Fly-By-Wire (Triple Modular Redundancy)](#1-fly-by-wire-triple-modular-redundancy)
+- [2. Fly-By-Wire (Triple Modular Redundancy)](#2-fly-by-wire-triple-modular-redundancy)
 
 ## 1. MPC (Model Predictive Control)
 This is a deterministic, real-time Cyber-Physical System (CPS) benchmark for robotics. It demonstrates the translation of a multi-threaded Model Predictive Control (MPC) architecture from standard POSIX C threads into [Lingua Franca (LF)](https://www.lf-lang.org/).
