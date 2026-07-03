@@ -15,6 +15,7 @@ A collection of deterministic, real-time Cyber-Physical System (CPS) benchmarks 
   - [Why is User CPU So Low?](#why-is-user-cpu-so-low-0001-s)
   - [How Reactors are Connected in Multicore](#how-reactors-are-connected-in-multicore-main-reactor)
   - [How Logical Time Works](#how-logical-time-works-in-lingua-franca)
+- [2. Fly-By-Wire (Triple Modular Redundancy)](#1-fly-by-wire-triple-modular-redundancy)
 
 ## 1. MPC (Model Predictive Control)
 This is a deterministic, real-time Cyber-Physical System (CPS) benchmark for robotics. It demonstrates the translation of a multi-threaded Model Predictive Control (MPC) architecture from standard POSIX C threads into [Lingua Franca (LF)](https://www.lf-lang.org/).
@@ -815,3 +816,9 @@ env->current_tag = (T + 1ms, 0)    ← logical time jumped forward
 | Deadline check | `_lf_worker_handle_deadline_violation_for_reaction()` (`reactor_threaded.c`) |
 | Read logical time | `lf_time_logical_elapsed()` → reads `env->current_tag.time - start_time` (mpc/core/reactor_common.c)|
 | Read physical time | `lf_time_physical()` → calls `clock_gettime(CLOCK_MONOTONIC)` (mpc/low_level_platform/impl/src/lf_windows_support.c)|
+
+
+
+## 2. Fly-By-Wire (Triple Modular Redundancy)
+
+![System Architecture Diagram](mpc/diagrams-and-results/architecture_fbw.png)
