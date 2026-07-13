@@ -10,5 +10,5 @@ pfc1_bias                ERROR_PFC2       ERROR_PFC1       ERROR_PFC1       MISM
 pfc2_bias                ERROR_PFC2       ERROR_PFC2       ERROR_PFC2       MATCH
 all_speeds_different     ERROR_PFC2       EMERGENCY        EMERGENCY        MISMATCH
 
-RESULT: LF PASS — LF matched symmetric TMR behavior in every scenario.
+RESULT: LF PASS - LF matched symmetric TMR behavior in every scenario.
 Original C WES disagreed with symmetric TMR in 2 scenario(s).

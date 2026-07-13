@@ -31,4 +31,4 @@ PASS: No unexpected EMERGENCY occurred
 Checks passed: 13
 Checks failed: 0
 
-RESULT: PASS — STOP, CONT, BIAS, WES voting, PFCDS reporting, and recovery all worked end to end.
+RESULT: PASS - STOP, CONT, BIAS, WES voting, PFCDS reporting, and recovery all worked end to end.

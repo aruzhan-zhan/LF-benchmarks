@@ -11,4 +11,4 @@ RMSE:                  2.72175513e-07
 Mismatched samples:    0
 Detailed CSV:          results/numerical/fbw_c_equiv_comparison.csv
 
-RESULT: PASS — all counters and speeds match.
+RESULT: PASS - all counters and speeds match.
