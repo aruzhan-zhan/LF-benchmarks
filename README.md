@@ -16,6 +16,18 @@ A collection of deterministic, real-time Cyber-Physical System (CPS) benchmarks 
   - [How Reactors are Connected in Multicore](#how-reactors-are-connected-in-multicore-main-reactor)
   - [How Logical Time Works](#how-logical-time-works-in-lingua-franca)
 - [2. Fly-By-Wire (Triple Modular Redundancy)](#2-fly-by-wire-triple-modular-redundancy)
+  - [Overview](#overview)
+  - [Project Files](#-fly-by-wire-project-files)
+  - [Original C Architecture](#original-c-architecture)
+  - [Lingua Franca Architecture](#lingua-franca-architecture)
+  - [Architectural Translation from C to LF](#architectural-translation-from-c-to-lf)
+  - [Quick Start](#quick-start)
+  - [Validation Methodology](#validation-methodology)
+  - [Validation Results](#validation-results)
+  - [Controlled Fault Sequence](#controlled-fault-sequence)
+  - [Original C WES Findings](#original-c-wes-findings)
+  - [Key Improvements](#key-improvements)
+
 
 ## 1. MPC (Model Predictive Control)
 This is a deterministic, real-time Cyber-Physical System (CPS) benchmark for robotics. It demonstrates the translation of a multi-threaded Model Predictive Control (MPC) architecture from standard POSIX C threads into [Lingua Franca (LF)](https://www.lf-lang.org/).
@@ -880,4 +892,581 @@ env->current_tag = (T + 1ms, 0)    ← logical time jumped forward
 
 ## 2. Fly-By-Wire (Triple Modular Redundancy)
 
-![System Architecture Diagram](mpc/diagrams-and-results/architecture_fbw.png)
+### Overview
+
+This benchmark is a deterministic Lingua Franca implementation of the [Wabri Fly-By-Wire benchmark](https://github.com/Wabri/Fly-By-Wire), a fault-tolerant flight-control system originally implemented as seven communicating POSIX C processes.
+
+The system uses **Triple Modular Redundancy (TMR)**. Three identical Primary Flight Computers independently process the same GPS input and calculate the aircraft speed. A Warning Electronics System compares their outputs using two-out-of-three voting:
+
+* If all three PFCs agree, the system continues normally.
+* If two PFCs agree, the remaining PFC is identified as faulty.
+* If no two PFCs agree, the system enters an emergency state.
+
+The original C implementation uses several unrelated operating-system communication mechanisms:
+
+* UNIX sockets
+* Named pipes
+* Shared files
+* POSIX signals
+* PID files
+* Process creation with `fork()`
+* Log-file polling
+
+The Lingua Franca implementation replaces these mechanisms with a deterministic reactor network connected through typed ports and coordinated by logical time.
+
+---
+
+### 📂 Fly-By-Wire Project Files
+
+**Main Implementations**
+
+* [`src/fbw.lf`](fbw-lf/src/fbw.lf) — Main Fly-By-Wire LF implementation with probabilistic fault generation.
+* [`src/fbw_controlled_test.lf`](fbw-lf/src/fbw_controlled_test.lf) — Deterministic end-to-end fault test using a fixed `STOP → CONT → BIAS` sequence.
+* [`src/fbw_c_equiv_validation.lf`](fbw-lf/src/fbw_c_equiv_validation.lf) — Compatibility build that reproduces the original C numerical semantics for direct counter-by-counter comparison.
+* [`src/fbw_nav.h`](fbw-lf/src/fbw_nav.h) — NMEA parsing, Haversine distance calculation, message types, status codes, and fault helpers.
+
+**Behavioral Tests**
+
+* [`tests/behavior/wes_lf_behavior_test.lf`](fbw-lf/tests/behavior/wes_lf_behavior_test.lf) — Isolated test of the corrected symmetric LF voting logic.
+* [`tests/behavior/wes_original_behavior_test.c`](fbw-lf/tests/behavior/wes_original_behavior_test.c) — Small C harness reproducing the original WES decision structure.
+
+**Validation Scripts**
+
+* [`scripts/compare_fbw.py`](fbw-lf/scripts/compare_fbw.py) — Compares numerical C and LF speed outputs by counter.
+* [`scripts/compare_behavior.py`](fbw-lf/scripts/compare_behavior.py) — Compares original C, expected TMR, and LF voting decisions.
+* [`scripts/check_e2e_faults.py`](fbw-lf/scripts/check_e2e_faults.py) — Automatically verifies the complete controlled LF fault sequence.
+
+**Input Data**
+
+* [`data/G18.txt`](fbw-lf/data/G18.txt) — Complete GPS/NMEA dataset from the original benchmark.
+* [`data/G18_validation.txt`](fbw-lf/data/G18_validation.txt) — A 100-record moving-data slice used for numerical validation.
+
+**Diagrams**
+
+* [`diagrams/fbw_original_system_architecture.png`](fbw-lf/diagrams/fbw_original_system_architecture.png) — Original POSIX C process and IPC architecture.
+* [`diagrams/fbw_lf_architecture.png`](fbw-lf/diagrams/fbw_lf_architecture.png) — Lingua Franca reactor and port architecture.
+
+**Validation Results**
+
+* [`results/numerical/summary.txt`](fbw-lf/results/numerical/summary.txt) — Numerical equivalence summary.
+* [`results/numerical/fbw_c_equiv_comparison.csv`](fbw-lf/results/numerical/fbw_c_equiv_comparison.csv) — Counter-by-counter numerical comparison.
+* [`results/behavior/summary.txt`](fbw-lf/results/behavior/summary.txt) — Voting behavior comparison.
+* [`results/e2e/summary.txt`](fbw-lf/results/e2e/summary.txt) — Automated end-to-end fault validation.
+* [`results/e2e/fault_trace.txt`](fbw-lf/results/e2e/fault_trace.txt) — Condensed trace of the controlled fault sequence.
+
+---
+
+### Original C Architecture
+
+![Original Fly-By-Wire Architecture](fbw-lf/diagrams/fbw_original_system_architecture.png)
+
+The original benchmark separates the system into seven POSIX processes:
+
+| Component  | Purpose                                                       |
+| ---------- | ------------------------------------------------------------- |
+| `PFC1`     | Processes GPS data and sends its result through a UNIX socket |
+| `PFC2`     | Processes GPS data and sends its result through a named pipe  |
+| `PFC3`     | Processes GPS data and sends its result through a shared file |
+| Transducer | Receives the three PFC outputs                                |
+| WES        | Performs two-out-of-three voting                              |
+| FMAN       | Injects process faults through POSIX signals                  |
+| PFCDS      | Logs faults and disconnects the system during an emergency    |
+
+Although all three PFCs perform the same computation, each one communicates through a different IPC mechanism. The architecture therefore combines process management, sockets, pipes, shared files, signal handling, PID tracking, and log-file synchronization.
+
+This makes the system difficult to reason about as one deterministic application. Correctness depends not only on the navigation calculation, but also on operating-system process scheduling and the behavior of several independent communication mechanisms.
+
+---
+
+### Lingua Franca Architecture
+
+![Lingua Franca Fly-By-Wire Architecture](fbw-lf/diagrams/fbw_lf_architecture.png)
+
+The LF implementation preserves the logical components of the original system while replacing the operating-system infrastructure with reactors and typed ports.
+
+```lf
+main reactor {
+    pfc1 = new PFC(id=1)
+    pfc2 = new PFC(id=2)
+    pfc3 = new PFC(id=3)
+
+    trans = new Transducer()
+    fman = new FailureGenerator()
+    wes = new WES()
+    pfcds = new DisconnectSwitch()
+
+    pfc1.speed_out -> trans.speed1
+    pfc2.speed_out -> trans.speed2
+    pfc3.speed_out -> trans.speed3
+
+    trans.out1 -> wes.speed1
+    trans.out2 -> wes.speed2
+    trans.out3 -> wes.speed3
+
+    wes.status -> pfcds.status_in
+
+    fman.fault1 -> pfc1.fault_in
+    fman.fault2 -> pfc2.fault_in
+    fman.fault3 -> pfc3.fault_in
+}
+```
+
+The connection graph explicitly describes both communication and execution dependencies. The LF compiler uses this graph to generate the required scheduling and message-delivery code.
+
+All three PFCs are instances of the same reactor and communicate through the same typed interface. Their behavior no longer depends on whether the original channel was implemented with a socket, pipe, or file.
+
+---
+
+### Architectural Translation from C to LF
+
+| Original POSIX C mechanism            | Lingua Franca replacement               |
+| ------------------------------------- | --------------------------------------- |
+| Seven processes created with `fork()` | Seven reactor instances                 |
+| `sleep(1)` control loops              | `timer t(0, 1 sec)`                     |
+| UNIX socket                           | Typed LF port                           |
+| Named pipe                            | Typed LF port                           |
+| Shared data file                      | Typed LF port                           |
+| PID files                             | Compile-time reactor references         |
+| `SIGSTOP`                             | Structured STOP fault message           |
+| `SIGCONT`                             | Structured CONT fault message           |
+| `SIGINT`                              | Structured interrupt fault message      |
+| `SIGUSR1` bias injection              | Structured BIAS fault message           |
+| WES polling `speedPFC*.log` files     | Direct timestamped input ports          |
+| Manual process shutdown               | `lf_request_stop()`                     |
+| OS-dependent message ordering         | Deterministic tag and reaction ordering |
+
+A fault message can carry several fault flags at one logical tag:
+
+```c
+typedef struct {
+    int stop;
+    int interrupt;
+    int cont;
+    int bias;
+} fault_msg_t;
+```
+
+This structure is necessary because an LF port carries one value at each tag. Instead of writing repeatedly to the same port and overwriting earlier faults, FMAN combines every generated fault for that tick into one message.
+
+---
+
+### Quick Start
+
+#### Prerequisites
+
+To build and run the benchmark on Linux or WSL, install:
+
+* `lfc` — Lingua Franca Compiler
+* `gcc`
+* `python3`
+
+Clone this repository and enter the benchmark directory:
+
+```bash
+git clone https://github.com/aruzhan-zhan/LF-benchmarks.git
+cd LF-benchmarks/fbw-lf
+```
+
+#### Run the Main Benchmark
+
+The main implementation uses the complete GPS input and probabilistic fault generation:
+
+```bash
+lfc src/fbw.lf
+./bin/fbw
+```
+
+The PFCs execute once per logical second. FMAN probabilistically generates STOP, interrupt, continuation, and bias faults.
+
+Example output:
+
+```text
+[FMAN  ] T=42 s | BIAS sent to PFC3
+[PFC3  ] T=42 s | BIAS scheduled
+[PFC3  ] T=42 s | BIAS applied: 2.6841 -> 12.0000
+[WES   ] T=42 s | ERROR: PFC3 discordant
+[PFCDS ] T=42 s | ERROR: PFC3 faulty. Logged.
+```
+
+#### Run the Deterministic End-to-End Test
+
+The controlled test executes in fast mode and injects a known fault sequence:
+
+```bash
+lfc src/fbw_controlled_test.lf
+./bin/fbw_controlled_test > e2e_fault_output.txt
+python3 scripts/check_e2e_faults.py
+```
+
+The test injects:
+
+| Logical time | Event                     |
+| -----------: | ------------------------- |
+|        `5 s` | STOP PFC2                 |
+|        `8 s` | CONT PFC2                 |
+|      `640 s` | Apply BIAS to PFC3        |
+|      `641 s` | Verify automatic recovery |
+
+#### Run the Numerical C-Equivalence Build
+
+Compile the compatibility implementation:
+
+```bash
+lfc src/fbw_c_equiv_validation.lf
+./bin/fbw_c_equiv_validation > lf_c_equiv_output.txt
+```
+
+Compare it with the PFC1 log produced by the original C benchmark:
+
+```bash
+python3 scripts/compare_fbw.py \
+  --c-log /path/to/Fly-By-Wire/log/speedPFC1.log \
+  --lf-log lf_c_equiv_output.txt \
+  --out fbw_c_equiv_comparison.csv
+```
+
+#### Run the Isolated Voting Test
+
+Compile and run the original C decision structure:
+
+```bash
+gcc -Wall -Wextra -O0 \
+  tests/behavior/wes_original_behavior_test.c \
+  -o wes_original_behavior_test
+
+./wes_original_behavior_test > c_behavior_output.txt
+```
+
+Compile and run the LF WES test:
+
+```bash
+lfc tests/behavior/wes_lf_behavior_test.lf
+./bin/wes_lf_behavior_test > lf_behavior_output.txt
+```
+
+Compare the decisions:
+
+```bash
+python3 scripts/compare_behavior.py \
+  c_behavior_output.txt \
+  lf_behavior_output.txt
+```
+
+---
+
+### Validation Methodology
+
+The port was evaluated at three levels.
+
+#### 1. Numerical Equivalence
+
+The numerical compatibility build preserves two behaviors from the original C PFC:
+
+* Single-precision `float` arithmetic
+* The original one-sample output delay
+
+Both implementations process the same 100-record NMEA input slice. Their outputs are matched by counter and compared using an absolute tolerance of `1 × 10⁻⁴`.
+
+This test evaluates whether the navigation parsing and speed calculation were ported correctly without allowing architectural improvements to change the baseline behavior.
+
+#### 2. Voting-Logic Validation
+
+The original C WES decision structure and the LF WES are tested using the same nine synthetic input scenarios.
+
+The scenarios cover:
+
+* All three PFCs agreeing
+* One PFC containing a biased speed
+* One PFC containing a stale counter
+* Recovery after a fault
+* Three different counters
+* Three different speeds
+
+The LF implementation is evaluated against the intended symmetric two-out-of-three TMR rule.
+
+#### 3. End-to-End Fault Validation
+
+The deterministic LF test evaluates the complete reactor chain:
+
+```text
+FMAN
+  ↓
+PFC
+  ↓
+Transducer
+  ↓
+WES
+  ↓
+PFCDS
+```
+
+The automated checker verifies fault generation, PFC state changes, WES fault isolation, PFCDS reporting, recovery, and the absence of an unexpected emergency.
+
+---
+
+### Validation Results
+
+#### Numerical Equivalence
+
+| Metric                 |              Result |
+| ---------------------- | ------------------: |
+| C records              |                 100 |
+| LF records             |                 100 |
+| Common counters        |                 100 |
+| Missing counters       |                   0 |
+| Tolerance              |        `1.0 × 10⁻⁴` |
+| Maximum absolute error |       `4.93 × 10⁻⁷` |
+| Mean absolute error    |     `2.3069 × 10⁻⁷` |
+| RMSE                   | `2.72175513 × 10⁻⁷` |
+| Mismatched samples     |               **0** |
+
+```text
+RESULT: PASS - all counters and speeds match.
+```
+
+The maximum observed error is more than 200 times smaller than the selected tolerance. The remaining difference is consistent with the number of decimal places written to the original C log.
+
+#### Voting Behavior
+
+| Scenario             | Original C   | Expected TMR | LF           |
+| -------------------- | ------------ | ------------ | ------------ |
+| All agree            | `OK`         | `OK`         | `OK`         |
+| PFC3 biased          | `ERROR_PFC3` | `ERROR_PFC3` | `ERROR_PFC3` |
+| PFC2 stale           | `ERROR_PFC2` | `ERROR_PFC2` | `ERROR_PFC2` |
+| Recovered            | `OK`         | `OK`         | `OK`         |
+| PFC1 stale           | `ERROR_PFC1` | `ERROR_PFC1` | `ERROR_PFC1` |
+| Different counters   | `EMERGENCY`  | `EMERGENCY`  | `EMERGENCY`  |
+| PFC1 biased          | `ERROR_PFC2` | `ERROR_PFC1` | `ERROR_PFC1` |
+| PFC2 biased          | `ERROR_PFC2` | `ERROR_PFC2` | `ERROR_PFC2` |
+| All speeds different | `ERROR_PFC2` | `EMERGENCY`  | `EMERGENCY`  |
+
+The LF implementation matched the expected symmetric TMR behavior in all nine scenarios.
+
+The original C WES disagreed with the intended TMR decision in two scenarios.
+
+#### End-to-End Fault Test
+
+```text
+Checks passed: 13
+Checks failed: 0
+
+RESULT: PASS - STOP, CONT, BIAS, WES voting,
+PFCDS reporting, and recovery all worked end to end.
+```
+
+---
+
+### Controlled Fault Sequence
+
+The deterministic fault run demonstrates how faults propagate through the complete LF architecture.
+
+#### STOP PFC2
+
+At logical time `5 s`, FMAN stops PFC2:
+
+```text
+[FMAN  ] T=5 s | TEST: STOP sent to PFC2
+[PFC2  ] T=5 s | STOPPED by failure generator
+```
+
+PFC1 and PFC3 advance to counter 5, while the most recently received PFC2 value remains at counter 4:
+
+```text
+[WES   ] T=5 s | ERROR: PFC2 discordant |
+PFC1={c=5,s=0.0000}
+PFC2={c=4,s=0.0000}
+PFC3={c=5,s=0.0000}
+```
+
+PFCDS receives the WES status:
+
+```text
+[PFCDS ] T=5 s | ERROR: PFC2 faulty. Logged.
+```
+
+The WES continues to identify PFC2 as discordant at logical times 6 and 7.
+
+#### CONT PFC2
+
+At logical time `8 s`, FMAN resumes PFC2:
+
+```text
+[FMAN  ] T=8 s | TEST: CONT sent to PFC2
+[PFC2  ] T=8 s | RESUMED by failure generator
+[WES   ] T=8 s | OK: all speeds agree: 0.0000
+```
+
+The LF PFC continues advancing its internal GPS state and counter while its output is stopped. Therefore, it can immediately rejoin the other PFCs when CONT is received instead of remaining several samples behind.
+
+#### BIAS PFC3
+
+At logical time `640 s`, FMAN corrupts one transmitted PFC3 value:
+
+```text
+[FMAN  ] T=640 s | TEST: BIAS sent to PFC3
+[PFC3  ] T=640 s | BIAS applied: 2.6841 -> 12.0000
+```
+
+The internal PFC3 navigation state is not corrupted. Only the transmitted sample is modified.
+
+The WES compares all three timestamped outputs and isolates PFC3:
+
+```text
+[WES   ] T=640 s | ERROR: PFC3 discordant |
+PFC1={c=640,s=2.6841}
+PFC2={c=640,s=2.6841}
+PFC3={c=640,s=12.0000}
+
+[PFCDS ] T=640 s | ERROR: PFC3 faulty. Logged.
+```
+
+At the following logical tick, all three outputs agree again:
+
+```text
+[WES   ] T=641 s | OK: all speeds agree: 2.7225
+```
+
+---
+
+### Original C WES Findings
+
+The original C WES does not implement a fully symmetric two-out-of-three comparison.
+
+Its first branch compares both the counters and speeds of PFC1 and PFC2. Some later branches compare only counters. This causes incorrect fault isolation in certain edge cases.
+
+#### PFC1 Bias
+
+Input:
+
+```text
+PFC1 = {counter=16, speed=28.0}
+PFC2 = {counter=16, speed=7.0}
+PFC3 = {counter=16, speed=7.0}
+```
+
+Correct result:
+
+```text
+ERROR_PFC1
+```
+
+Original C result:
+
+```text
+ERROR_PFC2
+```
+
+LF result:
+
+```text
+ERROR_PFC1
+```
+
+#### All Three Speeds Different
+
+Input:
+
+```text
+PFC1 = {counter=18, speed=7.0}
+PFC2 = {counter=18, speed=8.0}
+PFC3 = {counter=18, speed=9.0}
+```
+
+Correct result:
+
+```text
+EMERGENCY
+```
+
+Original C result:
+
+```text
+ERROR_PFC2
+```
+
+LF result:
+
+```text
+EMERGENCY
+```
+
+The LF WES calculates all three pairwise matches symmetrically:
+
+```c
+match_12 = same_counter_12 && same_speed_12;
+match_13 = same_counter_13 && same_speed_13;
+match_23 = same_counter_23 && same_speed_23;
+```
+
+The decision is then independent of branch ordering:
+
+```c
+if (match_12 && match_13) {
+    result = STATUS_OK;
+} else if (match_12) {
+    result = STATUS_ERROR_PFC3;
+} else if (match_13) {
+    result = STATUS_ERROR_PFC2;
+} else if (match_23) {
+    result = STATUS_ERROR_PFC1;
+} else {
+    result = STATUS_EMERGENCY;
+}
+```
+
+---
+
+### Key Improvements
+
+#### 1. Uniform Communication
+
+All three PFCs now use the same typed LF interface. Their behavior is independent of the communication mechanism selected by the operating system.
+
+#### 2. Explicit Data Flow
+
+The architecture is visible directly in the main reactor. Every communication path is represented by an LF connection.
+
+#### 3. Deterministic Voting
+
+The WES processes timestamped values according to logical tags and uses a symmetric pairwise TMR decision.
+
+#### 4. Structured Fault Delivery
+
+Faults are represented as data rather than asynchronous POSIX signals. Their delivery and processing order are deterministic.
+
+#### 5. Immediate STOP/CONT Recovery
+
+A stopped PFC suppresses its output but continues advancing its internal GPS state. When it resumes, it is aligned with the same sample and counter as the other PFCs.
+
+#### 6. Transient Bias Isolation
+
+A BIAS fault changes only the transmitted result. It does not permanently corrupt the PFC's internal navigation state.
+
+#### 7. Reproducible Validation
+
+The repository includes:
+
+* Fixed input datasets
+* Compatibility and controlled test builds
+* Automated validation scripts
+* Machine-readable output formats
+* Stored result summaries
+* Counter-by-counter comparison data
+
+---
+
+### Validation Scope and Limitation
+
+The numerical comparison uses PFC1 from the original C benchmark because its socket communication path produced a complete 100-record output log.
+
+During testing, the original PFC2 named-pipe path did not produce output in the test environment. Therefore, complete original-C voting behavior was evaluated by extracting the WES decision structure into an isolated C harness rather than relying on the incomplete end-to-end IPC run.
+
+The LF end-to-end test evaluates the complete LF reactor system independently, including FMAN, all three PFCs, the Transducer, WES, and PFCDS.
+
+---
+
+### Attribution
+
+This implementation is based on the original [Wabri Fly-By-Wire](https://github.com/Wabri/Fly-By-Wire) benchmark, distributed under the MIT License.
+
+See [`fbw-lf/THIRD_PARTY_NOTICES.md`](fbw-lf/THIRD_PARTY_NOTICES.md) for details.
