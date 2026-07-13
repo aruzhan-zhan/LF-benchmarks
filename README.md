@@ -949,7 +949,7 @@ The Lingua Franca implementation replaces these mechanisms with a deterministic 
 **Validation Results**
 
 * [`results/numerical/summary.txt`](fbw-lf/results/numerical/summary.txt): Numerical equivalence summary.
-* [`results/numerical/fbw_c_equiv_comparison.csv`](fbw-lf/results/numerical/fbw_c_equiv_comparison.csv) — Counter-by-counter numerical comparison.
+* [`results/numerical/fbw_c_equiv_comparison.csv`](fbw-lf/results/numerical/fbw_c_equiv_comparison.csv): Counter-by-counter numerical comparison.
 * [`results/behavior/summary.txt`](fbw-lf/results/behavior/summary.txt): Voting behavior comparison.
 * [`results/e2e/summary.txt`](fbw-lf/results/e2e/summary.txt): Automated end-to-end fault validation.
 * [`results/e2e/fault_trace.txt`](fbw-lf/results/e2e/fault_trace.txt): Condensed trace of the controlled fault sequence.
