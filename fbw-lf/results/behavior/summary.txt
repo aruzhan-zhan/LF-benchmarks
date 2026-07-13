@@ -1,0 +1,14 @@
+scenario                 original_C       expected_TMR      LF               C_vs_expected
+--------------------------------------------------------------------------------------------------
+all_agree                OK               OK               OK               MATCH
+pfc3_bias                ERROR_PFC3       ERROR_PFC3       ERROR_PFC3       MATCH
+pfc2_stale               ERROR_PFC2       ERROR_PFC2       ERROR_PFC2       MATCH
+recovered                OK               OK               OK               MATCH
+pfc1_stale               ERROR_PFC1       ERROR_PFC1       ERROR_PFC1       MATCH
+different_counters       EMERGENCY        EMERGENCY        EMERGENCY        MATCH
+pfc1_bias                ERROR_PFC2       ERROR_PFC1       ERROR_PFC1       MISMATCH
+pfc2_bias                ERROR_PFC2       ERROR_PFC2       ERROR_PFC2       MATCH
+all_speeds_different     ERROR_PFC2       EMERGENCY        EMERGENCY        MISMATCH
+
+RESULT: LF PASS — LF matched symmetric TMR behavior in every scenario.
+Original C WES disagreed with symmetric TMR in 2 scenario(s).

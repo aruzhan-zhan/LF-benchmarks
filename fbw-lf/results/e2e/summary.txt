@@ -1,0 +1,34 @@
+=== LF End-to-End Fault Validation ===
+
+PASS: FMAN sends STOP to PFC2 at T=5
+      [FMAN  ] T=5 s | TEST: STOP sent to PFC2
+PASS: PFC2 receives and applies STOP
+      [PFC2  ] T=5 s | STOPPED by failure generator
+PASS: WES identifies missing/stopped PFC2
+      [WES   ] T=5 s | ERROR: PFC2 discordant | PFC1={c=5,s=0.0000} PFC2={c=4,s=0.0000} PFC3={c=5,s=0.0000}
+PASS: PFCDS receives PFC2 fault status
+      [PFCDS ] T=5 s | ERROR: PFC2 faulty. Logged.
+PASS: FMAN sends CONT to PFC2 at T=8
+      [FMAN  ] T=8 s | TEST: CONT sent to PFC2
+PASS: PFC2 receives and applies CONT
+      [PFC2  ] T=8 s | RESUMED by failure generator
+PASS: WES returns to OK immediately after CONT
+      [WES   ] T=8 s | OK: all speeds agree: 0.0000
+PASS: FMAN sends BIAS to PFC3 at T=640
+      [FMAN  ] T=640 s | TEST: BIAS sent to PFC3
+PASS: PFC3 applies BIAS to transmitted sample
+      [PFC3  ] T=640 s | BIAS applied: 2.6841 -> 12.0000
+PASS: WES identifies biased PFC3
+      [WES   ] T=640 s | ERROR: PFC3 discordant | PFC1={c=640,s=2.6841} PFC2={c=640,s=2.6841} PFC3={c=640,s=12.0000}
+PASS: PFCDS receives PFC3 fault status
+      [PFCDS ] T=640 s | ERROR: PFC3 faulty. Logged.
+PASS: WES recovers on the next sample
+      [WES   ] T=641 s | OK: all speeds agree: 2.7225
+
+PASS: No unexpected EMERGENCY occurred
+
+=== Summary ===
+Checks passed: 13
+Checks failed: 0
+
+RESULT: PASS — STOP, CONT, BIAS, WES voting, PFCDS reporting, and recovery all worked end to end.

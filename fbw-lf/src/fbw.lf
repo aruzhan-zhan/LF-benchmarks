@@ -1,0 +1,483 @@
+/**
+ * Fly-By-Wire: Lingua Franca Implementation
+ * 
+ * Ported from: github.com/Wabri/Fly-By-Wire (C, 7 POSIX processes)
+ *
+ *
+ * What LF eliminates:
+ *   - 3 IPC mechanisms (socket, pipe, shared file) -> identical LF ports
+ *   - fork() × 7 -> reactor instantiation
+ *   - sleep(1) -> timer(0, 1 sec)
+ *   - POSIX signals (SIGSTOP/INT/CONT/USR1) -> fault messages on ports
+ *   - PID files -> not needed (compile-time wiring)
+ *   - Log file reading (WES reads speedPFC*.log) -> direct port connection
+ *
+ * The navigation math (NMEA parsing, Haversine distance) is preserved
+ * verbatim in fbw_nav.h.
+ */
+target C {
+    timeout: 750 sec,
+    files: ["fbw_nav.h", "G18.txt"]
+}
+
+preamble {=
+    #include "fbw_nav.h"
+
+    /*
+     * A single LF port can carry only one value at a logical tag.
+     * Use one message containing every fault generated for that tick,
+     * rather than calling lf_set() several times on the same port.
+     */
+    typedef struct {
+        int stop;
+        int interrupt;
+        int cont;
+        int bias;
+    } fault_msg_t;
+=}
+
+/**
+ * PFC: Primary Flight Computer
+ * Each tick: read next GPGLL from G18.txt, compute speed, output it.
+ * Responds to fault messages (stop/resume/kill/bias).
+ * All 3 PFC instances are identical: the IPC distinction is gone.
+ */
+reactor PFC(id: int = 1) {
+    input fault_in: fault_msg_t
+    output speed_out: speed_msg_t
+
+    state fp: {= FILE* =} = {= NULL =}
+    state prev_fix: gll_fix_t
+    state has_prev: bool = false
+    state accumulated_speed: double = 0.0
+    state counter: int = -1
+    state active: bool = true
+    state alive: bool = true
+    state bias: bool = false
+    state eof_reached: bool = false
+
+    timer t(0, 1 sec)
+
+    reaction(startup) {=
+        // Open the NMEA data file
+        self->fp = fopen("G18.txt", "r");
+        if (self->fp == NULL) {
+            // Try alternate path
+            self->fp = fopen("data/G18.txt", "r");
+        }
+        if (self->fp == NULL) {
+            lf_print_error("PFC%d: Cannot open G18.txt", self->id);
+        }
+        // Initialize prev_fix
+        memset(&self->prev_fix, 0, sizeof(gll_fix_t));
+    =}
+
+    // Handle every fault generated for this PFC at the current tag.
+    reaction(fault_in) {=
+        fault_msg_t fault = fault_in->value;
+        long long t = lf_time_logical_elapsed() / 1000000000LL;
+
+        /*
+         * Process faults in the same order used by FMAN:
+         * STOP, INT, CONT, then BIAS.
+         */
+        if (fault.stop && self->alive && self->active) {
+            self->active = false;
+            printf("[PFC%d  ] T=%lld s | STOPPED by failure generator\n",
+                   self->id, t);
+        }
+
+        if (fault.interrupt && self->alive) {
+            self->alive = false;
+            printf("[PFC%d  ] T=%lld s | KILLED by failure generator\n",
+                   self->id, t);
+        }
+
+        if (fault.cont && self->alive && !self->active) {
+            self->active = true;
+            printf("[PFC%d  ] T=%lld s | RESUMED by failure generator\n",
+                   self->id, t);
+        }
+
+        if (fault.bias && self->alive) {
+            self->bias = true;
+            printf("[PFC%d  ] T=%lld s | BIAS scheduled\n",
+                   self->id, t);
+        }
+    =}
+
+    // Main tick: always advance the GPS stream while alive.
+    // A stopped PFC suppresses its output, but does not fall behind.
+    reaction(t) -> speed_out {=
+        if (!self->alive || self->fp == NULL || self->eof_reached) {
+            return;
+        }
+
+        char line[256];
+        gll_fix_t fix;
+        int found = 0;
+
+        // Scan forward until we find the next GPGLL line.
+        while (fgets(line, sizeof(line), self->fp) != NULL) {
+            line[strcspn(line, "\r\n")] = '\0';
+            if (parse_gpgll(line, &fix)) {
+                found = 1;
+                break;
+            }
+        }
+
+        if (!found) {
+            self->eof_reached = true;
+            printf("[PFC%d  ] T=%lld s | End of G18.txt reached (counter=%d)\n",
+                   self->id,
+                   lf_time_logical_elapsed() / 1000000000LL,
+                   self->counter);
+            return;
+        }
+
+        // Compute the nominal navigation result.
+        double nominal_speed;
+        if (!self->has_prev) {
+            nominal_speed = 0.0;
+            self->has_prev = true;
+        } else {
+            nominal_speed = compute_speed(self->accumulated_speed,
+                                          &self->prev_fix, &fix);
+        }
+
+        /*
+         * Advance the internal state and counter on every tick, including
+         * ticks during which this PFC is stopped. This keeps all three PFCs
+         * aligned to the same GPS sample after a CONT fault.
+         */
+        self->accumulated_speed = nominal_speed;
+        self->prev_fix = fix;
+        self->counter++;
+
+        // SIGSTOP semantics for the model: no transmitted output.
+        if (!self->active) {
+            return;
+        }
+
+        // Corrupt only the transmitted sample, not the internal navigation state.
+        double transmitted_speed = nominal_speed;
+        if (self->bias) {
+            transmitted_speed = apply_bias(nominal_speed);
+            self->bias = false;
+            printf("[PFC%d  ] T=%lld s | BIAS applied: %.4f -> %.4f\n",
+                   self->id,
+                   lf_time_logical_elapsed() / 1000000000LL,
+                   nominal_speed,
+                   transmitted_speed);
+        }
+
+        speed_msg_t msg;
+        msg.counter = self->counter;
+        msg.speed = transmitted_speed;
+        msg.valid = 1;
+        lf_set(speed_out, msg);
+    =}
+
+    reaction(shutdown) {=
+        if (self->fp != NULL) {
+            fclose(self->fp);
+        }
+    =}
+}
+
+/**
+ * Transducer: receives speeds from 3 PFCs, logs and forwards to WES.
+ * In the C version, this used 3 different IPC mechanisms (socket, pipe, file).
+ * In LF, all three are identical ports.
+ */
+reactor Transducer {
+    input speed1: speed_msg_t
+    input speed2: speed_msg_t
+    input speed3: speed_msg_t
+
+    output out1: speed_msg_t
+    output out2: speed_msg_t
+    output out3: speed_msg_t
+
+    reaction(speed1) -> out1 {=
+        lf_set(out1, speed1->value);
+    =}
+
+    reaction(speed2) -> out2 {=
+        lf_set(out2, speed2->value);
+    =}
+
+    reaction(speed3) -> out3 {=
+        lf_set(out3, speed3->value);
+    =}
+}
+
+/**
+ * WES: Warning Electronics System
+ * Monitors the 3 PFC speeds and performs 2-of-3 voting.
+ * Outputs: OK, ERROR (identifying the discordant PFC), or EMERGENCY.
+ */
+reactor WES {
+    input speed1: speed_msg_t
+    input speed2: speed_msg_t
+    input speed3: speed_msg_t
+    output status: int
+
+    state last_s1: speed_msg_t
+    state last_s2: speed_msg_t
+    state last_s3: speed_msg_t
+    state has_s1: bool = false
+    state has_s2: bool = false
+    state has_s3: bool = false
+    state finished_count: int = 0
+
+    // Capture each speed as it arrives
+    reaction(speed1) {=
+        self->last_s1 = speed1->value;
+        self->has_s1 = true;
+    =}
+
+    reaction(speed2) {=
+        self->last_s2 = speed2->value;
+        self->has_s2 = true;
+    =}
+
+    reaction(speed3) {=
+        self->last_s3 = speed3->value;
+        self->has_s3 = true;
+    =}
+
+    // Vote after all inputs at this tag have been processed
+    // Using a timer slightly offset to ensure speeds arrive first
+    timer vote_tick(500 msec, 1 sec)
+
+    reaction(vote_tick) -> status {=
+        if (!self->has_s1 && !self->has_s2 && !self->has_s3) {
+            return;  // No data yet
+        }
+
+        // Check how many PFCs produced valid data
+        int valid1 = self->has_s1 && self->last_s1.valid;
+        int valid2 = self->has_s2 && self->last_s2.valid;
+        int valid3 = self->has_s3 && self->last_s3.valid;
+
+        int valid_count = valid1 + valid2 + valid3;
+
+        // If no valid data, nothing to vote on
+        if (valid_count == 0) {
+            return;
+        }
+
+        long long t = lf_time_logical_elapsed() / 1000000000LL;
+
+        // Compare counters and speeds (matching Wabri's wes.c logic)
+        int match_12 = valid1 && valid2 &&
+                       (self->last_s1.counter == self->last_s2.counter) &&
+                       (self->last_s1.speed == self->last_s2.speed);
+        int match_13 = valid1 && valid3 &&
+                       (self->last_s1.counter == self->last_s3.counter) &&
+                       (self->last_s1.speed == self->last_s3.speed);
+        int match_23 = valid2 && valid3 &&
+                       (self->last_s2.counter == self->last_s3.counter) &&
+                       (self->last_s2.speed == self->last_s3.speed);
+
+        int result;
+
+        if (match_12 && match_13) {
+            // All 3 agree
+            result = STATUS_OK;
+            printf("[WES   ] T=%lld s | OK: all speeds agree: %.4f\n",
+                   t, self->last_s1.speed);
+        } else if (match_12) {
+            // PFC3 is discordant
+            result = STATUS_ERROR_PFC3;
+            printf("[WES   ] T=%lld s | ERROR: PFC3 discordant | "
+                   "PFC1={c=%d,s=%.4f} PFC2={c=%d,s=%.4f} "
+                   "PFC3={c=%d,s=%.4f}\n",
+                   t,
+                   self->last_s1.counter, self->last_s1.speed,
+                   self->last_s2.counter, self->last_s2.speed,
+                   self->last_s3.counter, self->last_s3.speed);
+        } else if (match_13) {
+            // PFC2 is discordant
+            result = STATUS_ERROR_PFC2;
+            printf("[WES   ] T=%lld s | ERROR: PFC2 discordant | "
+                   "PFC1={c=%d,s=%.4f} PFC2={c=%d,s=%.4f} "
+                   "PFC3={c=%d,s=%.4f}\n",
+                   t,
+                   self->last_s1.counter, self->last_s1.speed,
+                   self->last_s2.counter, self->last_s2.speed,
+                   self->last_s3.counter, self->last_s3.speed);
+        } else if (match_23) {
+            // PFC1 is discordant
+            result = STATUS_ERROR_PFC1;
+            printf("[WES   ] T=%lld s | ERROR: PFC1 discordant | "
+                   "PFC1={c=%d,s=%.4f} PFC2={c=%d,s=%.4f} "
+                   "PFC3={c=%d,s=%.4f}\n",
+                   t,
+                   self->last_s1.counter, self->last_s1.speed,
+                   self->last_s2.counter, self->last_s2.speed,
+                   self->last_s3.counter, self->last_s3.speed);
+        } else {
+            // All 3 disagree: EMERGENCY
+            result = STATUS_EMERGENCY;
+            printf("[WES   ] T=%lld s | EMERGENCY: no two PFCs agree | "
+                   "PFC1={c=%d,s=%.4f} PFC2={c=%d,s=%.4f} "
+                   "PFC3={c=%d,s=%.4f}\n",
+                   t,
+                   self->last_s1.counter, self->last_s1.speed,
+                   self->last_s2.counter, self->last_s2.speed,
+                   self->last_s3.counter, self->last_s3.speed);
+        }
+
+        lf_set(status, result);
+
+        // Reset for next tick
+        self->has_s1 = false;
+        self->has_s2 = false;
+        self->has_s3 = false;
+    =}
+}
+
+/**
+ * FailureGenerator: FMAN
+ * Each tick: randomly pick a PFC, randomly send a fault based on probabilities.
+ * Probabilities match config.h: STOP=0.01, INT=0.0001, CONT=0.1, USR1=0.1
+ */
+reactor FailureGenerator {
+    output fault1: fault_msg_t
+    output fault2: fault_msg_t
+    output fault3: fault_msg_t
+
+    timer t(2 sec, 1 sec)
+
+    reaction(startup) {=
+        srand((unsigned)time(NULL));
+    =}
+
+    reaction(t) -> fault1, fault2, fault3 {=
+        int selected = rand() % 3;
+        long long t_sec = lf_time_logical_elapsed() / 1000000000LL;
+
+        fault_msg_t msg = {0, 0, 0, 0};
+        double r;
+
+        r = (double)rand() / (double)RAND_MAX;
+        if (r <= 0.01) {
+            msg.stop = 1;
+            printf("[FMAN  ] T=%lld s | STOP sent to PFC%d\n",
+                   t_sec, selected + 1);
+        }
+
+        r = (double)rand() / (double)RAND_MAX;
+        if (r <= 0.0001) {
+            msg.interrupt = 1;
+            printf("[FMAN  ] T=%lld s | INT sent to PFC%d\n",
+                   t_sec, selected + 1);
+        }
+
+        r = (double)rand() / (double)RAND_MAX;
+        if (r <= 0.1) {
+            msg.cont = 1;
+            printf("[FMAN  ] T=%lld s | CONT sent to PFC%d\n",
+                   t_sec, selected + 1);
+        }
+
+        r = (double)rand() / (double)RAND_MAX;
+        if (r <= 0.1) {
+            msg.bias = 1;
+            printf("[FMAN  ] T=%lld s | BIAS sent to PFC%d\n",
+                   t_sec, selected + 1);
+        }
+
+        /*
+         * Send exactly once on the selected port. Multiple lf_set() calls
+         * on one port at the same tag overwrite the earlier value.
+         */
+        if (msg.stop || msg.interrupt || msg.cont || msg.bias) {
+            switch (selected) {
+                case 0:
+                    lf_set(fault1, msg);
+                    break;
+                case 1:
+                    lf_set(fault2, msg);
+                    break;
+                case 2:
+                    lf_set(fault3, msg);
+                    break;
+            }
+        }
+    =}
+}
+
+/**
+ * DisconnectSwitch: PFCDS
+ * Receives status from WES and reacts:
+ *   - ERROR: log which PFC is faulty
+ *   - EMERGENCY: terminate the entire system
+ */
+reactor DisconnectSwitch {
+    input status_in: int
+
+    reaction(status_in) {=
+        int s = status_in->value;
+        long long t = lf_time_logical_elapsed() / 1000000000LL;
+
+        switch (s) {
+            case STATUS_OK:
+                // Normal operation — no action needed
+                break;
+            case STATUS_ERROR_PFC1:
+                printf("[PFCDS ] T=%lld s | ERROR: PFC1 faulty. Logged.\n", t);
+                break;
+            case STATUS_ERROR_PFC2:
+                printf("[PFCDS ] T=%lld s | ERROR: PFC2 faulty. Logged.\n", t);
+                break;
+            case STATUS_ERROR_PFC3:
+                printf("[PFCDS ] T=%lld s | ERROR: PFC3 faulty. Logged.\n", t);
+                break;
+            case STATUS_EMERGENCY:
+                printf("[PFCDS ] T=%lld s | EMERGENCY: all PFCs disagree! "
+                       "Terminating system.\n", t);
+                lf_request_stop();
+                break;
+            case STATUS_EXIT:
+                printf("[PFCDS ] T=%lld s | All PFCs finished. Shutting down.\n", t);
+                lf_request_stop();
+                break;
+        }
+    =}
+}
+
+/**
+ * Main reactor: wires the Boeing 777 architecture together.
+ * These arrows are the architecture diagram, in code.
+ */
+main reactor {
+    // Instantiate components
+    pfc1 = new PFC(id=1)
+    pfc2 = new PFC(id=2)
+    pfc3 = new PFC(id=3)
+    trans = new Transducer()
+    fman = new FailureGenerator()
+    wes = new WES()
+    pfcds = new DisconnectSwitch()
+
+    // PFCs -> Transducer (replaces socket, pipe, shared file)
+    pfc1.speed_out -> trans.speed1
+    pfc2.speed_out -> trans.speed2
+    pfc3.speed_out -> trans.speed3
+
+    // Transducer -> WES (replaces log file reading)
+    trans.out1 -> wes.speed1
+    trans.out2 -> wes.speed2
+    trans.out3 -> wes.speed3
+
+    // WES -> Disconnect Switch (replaces named pipe)
+    wes.status -> pfcds.status_in
+
+    // Failure Generator -> PFCs (replaces POSIX signals)
+    fman.fault1 -> pfc1.fault_in
+    fman.fault2 -> pfc2.fault_in
+    fman.fault3 -> pfc3.fault_in
+}

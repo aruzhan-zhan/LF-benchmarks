@@ -1,0 +1,42 @@
+# Lingua Franca generated files
+bin/
+src-gen/
+build/
+CMakeFiles/
+compile_commands.json
+
+# Native compilation
+*.o
+*.a
+*.so
+*.out
+*.exe
+wes_original_behavior_test
+
+# Runtime logs and raw test output
+*.log
+*_output.txt
+c_console.txt
+c_time.txt
+lf_time.txt
+tmp/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+# Lingua Franca generated headers
+include/

@@ -1,0 +1,16 @@
+[FMAN  ] T=5 s | TEST: STOP sent to PFC2
+[PFC2  ] T=5 s | STOPPED by failure generator
+[WES   ] T=5 s | ERROR: PFC2 discordant | PFC1={c=5,s=0.0000} PFC2={c=4,s=0.0000} PFC3={c=5,s=0.0000}
+[PFCDS ] T=5 s | ERROR: PFC2 faulty. Logged.
+[WES   ] T=6 s | ERROR: PFC2 discordant | PFC1={c=6,s=0.0000} PFC2={c=4,s=0.0000} PFC3={c=6,s=0.0000}
+[PFCDS ] T=6 s | ERROR: PFC2 faulty. Logged.
+[WES   ] T=7 s | ERROR: PFC2 discordant | PFC1={c=7,s=0.0000} PFC2={c=4,s=0.0000} PFC3={c=7,s=0.0000}
+[PFCDS ] T=7 s | ERROR: PFC2 faulty. Logged.
+[FMAN  ] T=8 s | TEST: CONT sent to PFC2
+[PFC2  ] T=8 s | RESUMED by failure generator
+[WES   ] T=8 s | OK: all speeds agree: 0.0000
+[FMAN  ] T=640 s | TEST: BIAS sent to PFC3
+[PFC3  ] T=640 s | BIAS applied: 2.6841 -> 12.0000
+[WES   ] T=640 s | ERROR: PFC3 discordant | PFC1={c=640,s=2.6841} PFC2={c=640,s=2.6841} PFC3={c=640,s=12.0000}
+[PFCDS ] T=640 s | ERROR: PFC3 faulty. Logged.
+[WES   ] T=641 s | OK: all speeds agree: 2.7225

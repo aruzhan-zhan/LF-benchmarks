@@ -1,0 +1,212 @@
+target C {
+    fast: true,
+    timeout: 9 sec
+}
+
+preamble {=
+    typedef struct {
+        int counter;
+        double speed;
+        int valid;
+        int scenario;
+    } test_speed_msg_t;
+
+    typedef struct {
+        int scenario;
+        int status;
+    } behavior_result_t;
+
+    enum {
+        STATUS_OK = 0,
+        STATUS_ERROR_PFC1 = 1,
+        STATUS_ERROR_PFC2 = 2,
+        STATUS_ERROR_PFC3 = 3,
+        STATUS_EMERGENCY = 4
+    };
+
+    static const char* status_name(int status) {
+        switch (status) {
+            case STATUS_OK: return "OK";
+            case STATUS_ERROR_PFC1: return "ERROR_PFC1";
+            case STATUS_ERROR_PFC2: return "ERROR_PFC2";
+            case STATUS_ERROR_PFC3: return "ERROR_PFC3";
+            case STATUS_EMERGENCY: return "EMERGENCY";
+            default: return "UNKNOWN";
+        }
+    }
+
+    static const char* scenario_name(int scenario) {
+        static const char* names[] = {
+            "all_agree",
+            "pfc3_bias",
+            "pfc2_stale",
+            "recovered",
+            "pfc1_stale",
+            "different_counters",
+            "pfc1_bias",
+            "pfc2_bias",
+            "all_speeds_different"
+        };
+        if (scenario < 0 || scenario > 8) return "unknown";
+        return names[scenario];
+    }
+=}
+
+reactor ScenarioSource {
+    output speed1: test_speed_msg_t
+    output speed2: test_speed_msg_t
+    output speed3: test_speed_msg_t
+
+    timer tick(0, 1 sec)
+
+    reaction(tick) -> speed1, speed2, speed3 {=
+        int scenario =
+            (int)(lf_time_logical_elapsed() / 1000000000LL);
+
+        if (scenario < 0 || scenario > 8) {
+            return;
+        }
+
+        test_speed_msg_t p1 = {0, 0.0, 1, scenario};
+        test_speed_msg_t p2 = {0, 0.0, 1, scenario};
+        test_speed_msg_t p3 = {0, 0.0, 1, scenario};
+
+        switch (scenario) {
+            case 0:
+                p1.counter = p2.counter = p3.counter = 10;
+                p1.speed = p2.speed = p3.speed = 5.0;
+                break;
+            case 1:
+                p1.counter = p2.counter = p3.counter = 11;
+                p1.speed = 5.0; p2.speed = 5.0; p3.speed = 20.0;
+                break;
+            case 2:
+                p1.counter = 12; p2.counter = 11; p3.counter = 12;
+                p1.speed = p2.speed = p3.speed = 5.0;
+                break;
+            case 3:
+                p1.counter = p2.counter = p3.counter = 13;
+                p1.speed = p2.speed = p3.speed = 6.0;
+                break;
+            case 4:
+                p1.counter = 13; p2.counter = 14; p3.counter = 14;
+                p1.speed = p2.speed = p3.speed = 6.0;
+                break;
+            case 5:
+                p1.counter = 15; p2.counter = 14; p3.counter = 13;
+                p1.speed = p2.speed = p3.speed = 7.0;
+                break;
+            case 6:
+                p1.counter = p2.counter = p3.counter = 16;
+                p1.speed = 28.0; p2.speed = 7.0; p3.speed = 7.0;
+                break;
+            case 7:
+                p1.counter = p2.counter = p3.counter = 17;
+                p1.speed = 7.0; p2.speed = 28.0; p3.speed = 7.0;
+                break;
+            case 8:
+                p1.counter = p2.counter = p3.counter = 18;
+                p1.speed = 7.0; p2.speed = 8.0; p3.speed = 9.0;
+                break;
+        }
+
+        lf_set(speed1, p1);
+        lf_set(speed2, p2);
+        lf_set(speed3, p3);
+    =}
+}
+
+reactor WES {
+    input speed1: test_speed_msg_t
+    input speed2: test_speed_msg_t
+    input speed3: test_speed_msg_t
+    output result: behavior_result_t
+
+    state last_s1: test_speed_msg_t
+    state last_s2: test_speed_msg_t
+    state last_s3: test_speed_msg_t
+    state has_s1: bool = false
+    state has_s2: bool = false
+    state has_s3: bool = false
+
+    reaction(speed1) {=
+        self->last_s1 = speed1->value;
+        self->has_s1 = true;
+    =}
+
+    reaction(speed2) {=
+        self->last_s2 = speed2->value;
+        self->has_s2 = true;
+    =}
+
+    reaction(speed3) {=
+        self->last_s3 = speed3->value;
+        self->has_s3 = true;
+    =}
+
+    timer vote_tick(500 msec, 1 sec)
+
+    reaction(vote_tick) -> result {=
+        if (!self->has_s1 || !self->has_s2 || !self->has_s3) {
+            return;
+        }
+
+        int match12 =
+            self->last_s1.counter == self->last_s2.counter &&
+            self->last_s1.speed == self->last_s2.speed;
+
+        int match13 =
+            self->last_s1.counter == self->last_s3.counter &&
+            self->last_s1.speed == self->last_s3.speed;
+
+        int match23 =
+            self->last_s2.counter == self->last_s3.counter &&
+            self->last_s2.speed == self->last_s3.speed;
+
+        int status;
+
+        if (match12 && match13) {
+            status = STATUS_OK;
+        } else if (match12) {
+            status = STATUS_ERROR_PFC3;
+        } else if (match13) {
+            status = STATUS_ERROR_PFC2;
+        } else if (match23) {
+            status = STATUS_ERROR_PFC1;
+        } else {
+            status = STATUS_EMERGENCY;
+        }
+
+        behavior_result_t output;
+        output.scenario = self->last_s1.scenario;
+        output.status = status;
+        lf_set(result, output);
+
+        self->has_s1 = false;
+        self->has_s2 = false;
+        self->has_s3 = false;
+    =}
+}
+
+reactor Reporter {
+    input result: behavior_result_t
+
+    reaction(result) {=
+        printf(
+            "LF_BEHAVIOR %s %s\n",
+            scenario_name(result->value.scenario),
+            status_name(result->value.status)
+        );
+    =}
+}
+
+main reactor {
+    source = new ScenarioSource()
+    wes = new WES()
+    reporter = new Reporter()
+
+    source.speed1 -> wes.speed1
+    source.speed2 -> wes.speed2
+    source.speed3 -> wes.speed3
+    wes.result -> reporter.result
+}

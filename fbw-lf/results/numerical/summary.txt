@@ -1,0 +1,14 @@
+=== Fly-By-Wire C vs LF Comparison ===
+C records:             100
+LF records:            100
+Common counters:       100
+C-only counters:       0
+LF-only counters:      0
+Tolerance:             1.0e-04
+Maximum abs. error:    4.93e-07
+Mean abs. error:       2.3069e-07
+RMSE:                  2.72175513e-07
+Mismatched samples:    0
+Detailed CSV:          results/numerical/fbw_c_equiv_comparison.csv
+
+RESULT: PASS — all counters and speeds match.
