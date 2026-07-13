@@ -920,39 +920,39 @@ The Lingua Franca implementation replaces these mechanisms with a deterministic 
 
 **Main Implementations**
 
-* [`src/fbw.lf`](fbw-lf/src/fbw.lf) — Main Fly-By-Wire LF implementation with probabilistic fault generation.
-* [`src/fbw_controlled_test.lf`](fbw-lf/src/fbw_controlled_test.lf) — Deterministic end-to-end fault test using a fixed `STOP → CONT → BIAS` sequence.
-* [`src/fbw_c_equiv_validation.lf`](fbw-lf/src/fbw_c_equiv_validation.lf) — Compatibility build that reproduces the original C numerical semantics for direct counter-by-counter comparison.
-* [`src/fbw_nav.h`](fbw-lf/src/fbw_nav.h) — NMEA parsing, Haversine distance calculation, message types, status codes, and fault helpers.
+* [`src/fbw.lf`](fbw-lf/src/fbw.lf): Main Fly-By-Wire LF implementation with probabilistic fault generation.
+* [`src/fbw_controlled_test.lf`](fbw-lf/src/fbw_controlled_test.lf): Deterministic end-to-end fault test using a fixed `STOP → CONT → BIAS` sequence.
+* [`src/fbw_c_equiv_validation.lf`](fbw-lf/src/fbw_c_equiv_validation.lf): Compatibility build that reproduces the original C numerical semantics for direct counter-by-counter comparison.
+* [`src/fbw_nav.h`](fbw-lf/src/fbw_nav.h): NMEA parsing, Haversine distance calculation, message types, status codes, and fault helpers.
 
 **Behavioral Tests**
 
-* [`tests/behavior/wes_lf_behavior_test.lf`](fbw-lf/tests/behavior/wes_lf_behavior_test.lf) — Isolated test of the corrected symmetric LF voting logic.
-* [`tests/behavior/wes_original_behavior_test.c`](fbw-lf/tests/behavior/wes_original_behavior_test.c) — Small C harness reproducing the original WES decision structure.
+* [`tests/behavior/wes_lf_behavior_test.lf`](fbw-lf/tests/behavior/wes_lf_behavior_test.lf): Isolated test of the corrected symmetric LF voting logic.
+* [`tests/behavior/wes_original_behavior_test.c`](fbw-lf/tests/behavior/wes_original_behavior_test.c): Small C harness reproducing the original WES decision structure.
 
 **Validation Scripts**
 
-* [`scripts/compare_fbw.py`](fbw-lf/scripts/compare_fbw.py) — Compares numerical C and LF speed outputs by counter.
-* [`scripts/compare_behavior.py`](fbw-lf/scripts/compare_behavior.py) — Compares original C, expected TMR, and LF voting decisions.
-* [`scripts/check_e2e_faults.py`](fbw-lf/scripts/check_e2e_faults.py) — Automatically verifies the complete controlled LF fault sequence.
+* [`scripts/compare_fbw.py`](fbw-lf/scripts/compare_fbw.py): Compares numerical C and LF speed outputs by counter.
+* [`scripts/compare_behavior.py`](fbw-lf/scripts/compare_behavior.py): Compares original C, expected TMR, and LF voting decisions.
+* [`scripts/check_e2e_faults.py`](fbw-lf/scripts/check_e2e_faults.py): Automatically verifies the complete controlled LF fault sequence.
 
 **Input Data**
 
-* [`data/G18.txt`](fbw-lf/data/G18.txt) — Complete GPS/NMEA dataset from the original benchmark.
-* [`data/G18_validation.txt`](fbw-lf/data/G18_validation.txt) — A 100-record moving-data slice used for numerical validation.
+* [`data/G18.txt`](fbw-lf/data/G18.txt): Complete GPS/NMEA dataset from the original benchmark.
+* [`data/G18_validation.txt`](fbw-lf/data/G18_validation.txt): A 100-record moving-data slice used for numerical validation.
 
 **Diagrams**
 
-* [`diagrams/fbw_original_system_architecture.png`](fbw-lf/diagrams/fbw_original_system_architecture.png) — Original POSIX C process and IPC architecture.
-* [`diagrams/fbw_lf_architecture.png`](fbw-lf/diagrams/fbw_lf_architecture.png) — Lingua Franca reactor and port architecture.
+* [`diagrams/fbw_original_system_architecture.png`](fbw-lf/diagrams/fbw_original_system_architecture.png): Original POSIX C process and IPC architecture.
+* [`diagrams/fbw_lf_architecture.png`](fbw-lf/diagrams/fbw_lf_architecture.png): Lingua Franca reactor and port architecture.
 
 **Validation Results**
 
-* [`results/numerical/summary.txt`](fbw-lf/results/numerical/summary.txt) — Numerical equivalence summary.
+* [`results/numerical/summary.txt`](fbw-lf/results/numerical/summary.txt): Numerical equivalence summary.
 * [`results/numerical/fbw_c_equiv_comparison.csv`](fbw-lf/results/numerical/fbw_c_equiv_comparison.csv) — Counter-by-counter numerical comparison.
-* [`results/behavior/summary.txt`](fbw-lf/results/behavior/summary.txt) — Voting behavior comparison.
-* [`results/e2e/summary.txt`](fbw-lf/results/e2e/summary.txt) — Automated end-to-end fault validation.
-* [`results/e2e/fault_trace.txt`](fbw-lf/results/e2e/fault_trace.txt) — Condensed trace of the controlled fault sequence.
+* [`results/behavior/summary.txt`](fbw-lf/results/behavior/summary.txt): Voting behavior comparison.
+* [`results/e2e/summary.txt`](fbw-lf/results/e2e/summary.txt): Automated end-to-end fault validation.
+* [`results/e2e/fault_trace.txt`](fbw-lf/results/e2e/fault_trace.txt): Condensed trace of the controlled fault sequence.
 
 ---
 
@@ -1056,7 +1056,7 @@ This structure is necessary because an LF port carries one value at each tag. In
 
 To build and run the benchmark on Linux or WSL, install:
 
-* `lfc` — Lingua Franca Compiler
+* `lfc`: Lingua Franca Compiler
 * `gcc`
 * `python3`
 
